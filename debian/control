@@ -1,0 +1,23 @@
+Source: yubikey-neo-manager
+Maintainer: Yubico Open Source Maintainers <ossmaint@yubico.com>
+Uploaders: Simon Josefsson <simon@yubico.com>, Klas Lindfors <klas@yubico.com>, Dain Nilsson <dain@yubico.com>
+Section: python
+Priority: extra
+Build-Depends: python-setuptools (>= 0.6b3),
+               python-all (>= 2.6.6-3),
+               debhelper (>= 8),
+               python-nose,
+Standards-Version: 3.9.4
+Homepage: https://github.com/Yubico/yubikey-neo-manager
+Vcs-Browser: https://github.com/Yubico/yubikey-neo-manager-dpkg
+Vcs-Git: git://github.com/Yubico/yubikey-neo-manager-dpkg.git
+
+Package: yubikey-neo-manager
+Architecture: all
+Depends: ${python:Depends},
+         ${misc:Depends},
+         yubikey-personalization
+XB-Python-Version: ${python:Versions}
+Provides: ${python:Provides}
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>

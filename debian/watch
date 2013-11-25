@@ -1,0 +1,2 @@
+version=3
+http://yubico.github.com/yubikey-neo-manager/releases.html .*/yubikey-neo-manager-(\d[\d.]*)\.(?:zip|tgz|tbz2|txz|tar\.gz|tar\.bz2|tar\.xz)

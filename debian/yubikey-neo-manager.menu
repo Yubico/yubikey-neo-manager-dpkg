@@ -1,0 +1,4 @@
+?package(yubikey-neo-manager):needs="X11" section="Applications/System/Administration"\
+  title="YubiKey NEO Manager" command="/usr/bin/neoman" \
+  longtitle="Graphical interface for YubiKey NEO management" \
+  icon="/usr/share/pixmaps/neoman.xpm"
