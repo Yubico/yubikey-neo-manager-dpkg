@@ -1,0 +1,306 @@
+2013-11-13  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS for release.
+
+2013-11-13  Dain Nilsson <dain@yubico.com>
+
+	* neoman/view/main.py: Increase window width slightly due to margins
+	on OSX.
+
+2013-11-12  Dain Nilsson <dain@yubico.com>
+
+	* neoman/main.py, neoman/view/main.py: fix.
+
+2013-11-12  Dain Nilsson <dain@yubico.com>
+
+	* neoman/view/main.py: Raise window after open.
+
+2013-11-12  Dain Nilsson <dain@yubico.com>
+
+	* neoman.spec, resources/qt.conf: Fix for Qt on OSX looking for
+	plugins in the wrong places.
+
+2013-11-12  Dain Nilsson <dain@yubico.com>
+
+	* neoman.spec: Added version info to Windows build.
+
+2013-11-12  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py: Don't call ykneomgr_done on device that
+	wasn't initialized.
+
+2013-11-11  Dain Nilsson <dain@yubico.com>
+
+	* neoman/main.py: Font fix for OSX Mavericks (QTBUG-32789).
+
+2013-11-11  Dain Nilsson <dain@yubico.com>
+
+	* neoman/libloader.py: Fixed library loading for OSX.
+
+2013-11-11  Dain Nilsson <dain@yubico.com>
+
+	* README: Updated build instructions in README.
+
+2013-11-11  Dain Nilsson <dain@yubico.com>
+
+	* neoman.spec: Sign exe before copy.
+
+2013-11-11  Dain Nilsson <dain@yubico.com>
+
+	* neoman.spec: Import getpass.
+
+2013-11-11  Dain Nilsson <dain@yubico.com>
+
+	* neoman.spec: Added code signing to windows.
+
+2013-11-08  Dain Nilsson <dain@yubico.com>
+
+	* neoman.spec: Improved spec.
+
+2013-11-08  Dain Nilsson <dain@yubico.com>
+
+	* neoman.spec, pyinstaller.py, setup.py: Replace pyinstaller command
+	with .spec file.
+
+2013-11-08  Dain Nilsson <dain@yubico.com>
+
+	* MANIFEST.in, NEWS, pyinstaller.py, setup.py: Added pyinstaller
+	building.
+
+2013-11-07  Dain Nilsson <dain@yubico.com>
+
+	* neoman/view/main.py: Made window smaller to remove some empty
+	space.
+
+2013-11-07  Dain Nilsson <dain@yubico.com>
+
+	* .gitignore, README: Updated README for running tests (there are
+	none currently).
+
+2013-11-06  Dain Nilsson <dain@yubico.com>
+
+	* : Added Windows icon.
+
+2013-11-06  Dain Nilsson <dain@yubico.com>
+
+	* : Replaced icon.
+
+2013-11-06  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py: Properly dispose of the NEO handle if
+	init/discover fails.
+
+2013-11-05  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, setup.cfg: Updated NEWS for release.
+
+2013-11-05  Dain Nilsson <dain@yubico.com>
+
+	* neoman/libloader.py: Fixed library loading on Windows broken by
+	earlier commit.
+
+2013-11-05  Dain Nilsson <dain@yubico.com>
+
+	* MANIFEST.in, scripts/neoman.1: Added man page.
+
+2013-11-05  Dain Nilsson <dain@yubico.com>
+
+	* MANIFEST.in, NEWS, README, neoman/device.py, neoman/main.py,
+	neoman/model/neo.py, neoman/view/main.py, neoman/view/nav.py,
+	neoman/view/neo.py: Release preparations.
+
+2013-11-04  Dain Nilsson <dain@yubico.com>
+
+	* neoman/view/nav.py, neoman/view/welcome.py: Only display welcome
+	page when no NEO is inserted.
+
+2013-11-04  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device.py, neoman/device_ccid.py, neoman/model/neo.py,
+	neoman/view/neo.py: Added 0x8X modes to mode selection dialog.
+
+2013-11-04  Dain Nilsson <dain@yubico.com>
+
+	* neoman/libloader.py: Better support for loading libraries.
+
+2013-10-30  Dain Nilsson <dain@yubico.com>
+
+	* neoman/libloader.py, neoman/ykneomgr.py, neoman/ykpers.py: Better
+	library loading for Windows.
+
+2013-10-30  Dain Nilsson <dain@yubico.com>
+
+	* neoman/ykneomgr.py: Correctly load libykneomgr-0.dll on Windows.
+
+2013-10-30  Dain Nilsson <dain@yubico.com>
+
+	* README, neoman/device.py, neoman/view/main.py: Updated build
+	instructions.
+
+2013-10-30  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device.py, neoman/device_hid.py: Fix HID version checking.
+
+2013-10-30  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py, neoman/device_hid.py: Don't open YubiKeys
+	with firmware < 3.
+
+2013-10-30  Dain Nilsson <dain@yubico.com>
+
+	* neoman/model/applet.py, neoman/view/main.py: Added version number
+	in title.
+
+2013-10-30  Dain Nilsson <dain@yubico.com>
+
+	* neoman/main.py, neoman/model/neo.py, neoman/view/nav.py,
+	neoman/view/neo.py: Made the available NEO list global.
+
+2013-10-30  Dain Nilsson <dain@yubico.com>
+
+	* neoman/__init__.py, setup.py: Moved version number declaration to
+	neoman/__init__.py
+
+2013-10-30  Dain Nilsson <dain@yubico.com>
+
+	* neoman/model/neo.py, neoman/view/neo.py: More robust device
+	detection.
+
+2013-10-29  Dain Nilsson <dain@yubico.com>
+
+	* neoman/model/neo.py, neoman/view/neo.py: Fixed default transport
+	key.
+
+2013-10-29  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py, neoman/model/applet.py,
+	neoman/model/neo.py, neoman/view/main.py, neoman/view/neo.py: prompt
+	for and save transport keys.
+
+2013-10-29  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py: Fix locked boolean of CCID device.
+
+2013-10-28  Dain Nilsson <dain@yubico.com>
+
+	* neoman/model/neo.py, neoman/view/neo.py: Require device removal
+	upon mode change.
+
+2013-10-28  Dain Nilsson <dain@yubico.com>
+
+	* neoman/__init__.py, neoman/device.py, neoman/device_ccid.py,
+	neoman/device_hid.py, neoman/libloader.py, neoman/main.py,
+	neoman/model/__init__.py, neoman/model/applet.py,
+	neoman/model/neo.py, neoman/storage.py, neoman/view/__init__.py,
+	neoman/view/applet.py, neoman/view/main.py, neoman/view/nav.py,
+	neoman/view/neo.py, neoman/view/welcome.py, neoman/ykneomgr.py,
+	neoman/ykpers.py: Added copyright headers.
+
+2013-10-28  Dain Nilsson <dain@yubico.com>
+
+	* neoman/model/neo.py, neoman/view/nav.py, neoman/view/neo.py: Made
+	device polling asynchronous.
+
+2013-10-28  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py, neoman/ykneomgr.py: Updated libykneomgr.
+
+2013-10-08  Dain Nilsson <dain@yubico.com>
+
+	* neoman/model/neo.py: Stop polling when the window doesn't have
+	focus.
+
+2013-10-08  Dain Nilsson <dain@yubico.com>
+
+	* neoman/model/applet.py, neoman/model/neo.py: Fix problem with
+	failing to release devices.
+
+2013-10-07  Dain Nilsson <dain@yubico.com>
+
+	* neoman/view/applet.py, neoman/view/main.py: Added AppletPage.
+
+2013-10-07  Dain Nilsson <dain@yubico.com>
+
+	* neoman/model/applet.py, neoman/view/neo.py: Added installed applet
+	list.
+
+2013-10-04  Dain Nilsson <dain@yubico.com>
+
+	* neoman/model/applet.py, neoman/view/nav.py, neoman/view/neo.py: 
+	Started adding applets.
+
+2013-10-04  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py, neoman/model/neo.py, neoman/view/main.py,
+	neoman/view/nav.py, neoman/view/neo.py, neoman/ykneomgr.py: Removed
+	neo removal signal (not needed).
+
+2013-10-04  Dain Nilsson <dain@yubico.com>
+
+	* neoman/view/main.py, neoman/view/neo.py, neoman/view/welcome.py: 
+	Return to start page on device removal.
+
+2013-10-04  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_hid.py, neoman/main.py, neoman/model/neo.py,
+	neoman/storage.py, neoman/view/main.py, scripts/neoman: Added
+	persistant storage.
+
+2013-10-03  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_hid.py, neoman/model/neo.py, neoman/view/neo.py: 
+	Signal when a NEO is removed.
+
+2013-10-03  Dain Nilsson <dain@yubico.com>
+
+	* README, neoman/view/main.py, neoman/view/mainwin.py,
+	scripts/neoman: Renamed mainwin.py -> main.py
+
+2013-10-03  Dain Nilsson <dain@yubico.com>
+
+	* neoman/model/neo.py: Store device name in memory.
+
+2013-10-03  Dain Nilsson <dain@yubico.com>
+
+	* neoman/model/neo.py: Fix mode switching.
+
+2013-10-03  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py, neoman/device_hid.py,
+	neoman/model/device.py, neoman/model/devices.py,
+	neoman/model/nav.py, neoman/model/neo.py, neoman/view/device.py,
+	neoman/view/mainwin.py, neoman/view/nav.py, neoman/view/neo.py,
+	neoman/ykneomgr.py: Refactored classes.
+
+2013-10-03  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device.py, neoman/device_ccid.py, neoman/device_hid.py,
+	neoman/model/devices.py, neoman/model/nav.py, neoman/neo.py,
+	neoman/view/device.py, neoman/view/mainwin.py, neoman/ykneomgr.py,
+	neoman/ykpers.py: Added basic support for listing devices and
+	reading serial/version.
+
+2013-10-01  Dain Nilsson <dain@yubico.com>
+
+	* neoman/model/device.py, neoman/model/nav.py, neoman/neo.py,
+	neoman/view/device.py, neoman/view/mainwin.py, neoman/ykneomgr.py,
+	neoman/ykpers.py, setup.py: Added ykneomgr lib.
+
+2013-10-01  Dain Nilsson <dain@yubico.com>
+
+	* neoman/model/__init__.py, neoman/model/device.py,
+	neoman/model/nav.py, neoman/view/device.py, neoman/view/mainwin.py,
+	neoman/view/test.py, neoman/view/test.qml, scripts/neoman: Removed
+	QML, added navigation.
+
+2013-09-27  Dain Nilsson <dain@yubico.com>
+
+	* MANIFEST.in, neoman/__init__.py, neoman/libloader.py,
+	neoman/view/__init__.py, neoman/view/test.py, neoman/view/test.qml,
+	neoman/ykpers.py, scripts/neoman, setup.py: Added Added proof of
+	concept
+
+2013-09-27  Dain Nilsson <dain@yubico.com>
+
+	* Initial commit.
+

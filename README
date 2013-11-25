@@ -1,0 +1,50 @@
+YubiKey NEO Manager
+-------------------
+Tool for managing your YubiKey NEO configuration.
+
+Dependencies
+------------
+YubiKey NEO Manager requires PySide, libykneomgr and libykpers-1.
+
+Running tests
+-------------
+Tests can be run using the "nosetests" command, from the python-nose package.
+Anternatively "python setup.py test" can be used, but this will cause PySide
+to be compiled from source, requiring the python-dev package.
+
+Building binaries
+-----------------
+Binaries for Windows and OSX are built using PyInstaller.
+
+Windows:
+For Windows you will need python, PySide, PyInstaller and Pywin32 installed
+(32 or 64-bit versions depending on the architecture of the binary your are
+building).
+
+Clone the git repository and checkout the desired release tag (or branch):
+
+  git clone https://github.com/Yubico/yubikey-neo-manager.git
+  cd yubikey-neo-manager
+
+Copy any required DLL files into a "lib" subdirectory, which you will need
+to manually create.
+
+To sign the executable, copy the pfx file to neoman.pfx and place it in the
+root of the project folder. You will need signtool.exe (from the Windows
+SDK) either copied into the root as well or in a location in your PATH.
+
+Run "pyinstaller.exe neoman.spec" from the main project folder.
+
+
+OSX:
+For OSX you need python, pyside and pyinstaller installed.
+
+Clone the git repository and checkout the desired release tag (or branch):
+
+  git clone https://github.com/Yubico/yubikey-neo-manager.git
+  cd yubikey-neo-manager
+
+Copy any required dylib files into a "lib" subdirectory, which you will need
+to manually create.
+
+Run "pyinstaller neoman.spec" from the main project directory.
