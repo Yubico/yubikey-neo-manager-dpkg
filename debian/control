@@ -19,5 +19,9 @@ Depends: ${python:Depends},
          yubikey-personalization
 XB-Python-Version: ${python:Versions}
 Provides: ${python:Provides}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Description: Graphical interface for YubiKey NEO management
+ The YubiKey NEO provides extensible functionality in the form of installable
+ apps, as well as the functionality of the original YubiKey.
+ .
+ This is a graphical user interface for configuring a YubiKey NEO that is
+ plugged in to your computers USB port.
