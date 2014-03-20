@@ -1,7 +1,8 @@
 include release.py
-include pyinstaller.py
 include COPYING
 include NEWS
 include ChangeLog
-include neoman/neoman.png
+include neoman/appletdb.json
+include neoman/*.png
 include scripts/*.1
+include resources/*

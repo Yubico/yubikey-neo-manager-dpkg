@@ -24,46 +24,51 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+import os
 from PySide import QtGui, QtCore
-from neoman.device import MODE_HID, MODE_CCID, MODE_HID_CCID
-from neoman.model.neo import YubiKeyNeo
-from neoman.model.applet import get_applet
 from collections import OrderedDict
+from functools import partial
+from neoman import messages as m
+from neoman.storage import settings
+from neoman.model.neo import YubiKeyNeo
+from neoman.model.applet import Applet
 
 MODES = OrderedDict([
-    ("OTP", 0x00),
-    ("CCID", 0x01),
-    ("CCID with touch eject", 0x81),
-    ("OTP+CCID", 0x02),
-    ("OTP+CCID with touch eject", 0x82)
+    (m.hid, 0x00),
+    (m.ccid, 0x01),
+    (m.ccid_touch_eject, 0x81),
+    (m.hid_ccid, 0x02),
+    (m.hid_ccid_touch_eject, 0x82)
 ])
 
 
 def name_for_mode(mode):
-    return next((n for n, m in MODES.items() if m == mode), None)
+    return next((n for n, md in MODES.items() if md == mode), None)
 
 
 class NeoPage(QtGui.QTabWidget):
-    neo = QtCore.Signal(YubiKeyNeo)
+    _neo = QtCore.Signal(YubiKeyNeo)
+    applet = QtCore.Signal(Applet)
 
     def __init__(self):
         super(NeoPage, self).__init__()
-        self._neo = None
 
-        settings = SettingsTab()
-        self.neo.connect(settings.set_neo)
-        self.addTab(settings, "Settings")
+        settings_tab = SettingsTab()
+        self._neo.connect(settings_tab.set_neo)
+        self.addTab(settings_tab, m.settings)
 
         apps = AppsTab(self, 1)
-        self.neo.connect(apps.set_neo)
-        # self.addTab(apps, "Installed apps")  # TODO: Reenable
+        self._neo.connect(apps.set_neo)
+        apps.applet.connect(self._set_applet)
+        self.addTab(apps, m.installed_apps)
 
+    @QtCore.Slot(YubiKeyNeo)
     def setNeo(self, neo):
-        self._neo = neo
-        self.neo.emit(neo)
+        self._neo.emit(neo)
 
-    def getNeo(self):
-        return self._neo
+    @QtCore.Slot(Applet)
+    def _set_applet(self, applet):
+        self.applet.emit(applet)
 
 
 class SettingsTab(QtGui.QWidget):
@@ -80,7 +85,7 @@ class SettingsTab(QtGui.QWidget):
 
         name_row = QtGui.QHBoxLayout()
         name_row.addWidget(self._name)
-        button = QtGui.QPushButton("Change name")
+        button = QtGui.QPushButton(m.change_name)
         button.clicked.connect(self.change_name)
         name_row.addWidget(button)
 
@@ -91,12 +96,12 @@ class SettingsTab(QtGui.QWidget):
         layout.addLayout(name_row)
         layout.addLayout(details_row)
 
-        button = QtGui.QPushButton("Manage transport keys")
+        button = QtGui.QPushButton(m.manage_keys)
         button.clicked.connect(self.manage_keys)
         # TODO: Re-add when implemented:
         # layout.addWidget(button)
 
-        self._mode_btn = QtGui.QPushButton("Change connection mode")
+        self._mode_btn = QtGui.QPushButton(m.change_mode)
         self._mode_btn.clicked.connect(self.change_mode)
         layout.addWidget(self._mode_btn)
 
@@ -109,48 +114,43 @@ class SettingsTab(QtGui.QWidget):
         if not neo:
             return
 
-        self._name.setText("Name: %s" % neo.name)
-        self._serial.setText("Serial number: %s" % neo.serial)
-        self._firmware.setText("Firmware version: %s" %
-                               '.'.join(map(str, neo.version)))
-        self._mode_btn.setText(
-            "Change connection mode [%s]" % name_for_mode(neo.mode))
+        self._name.setText(m.name_1 % neo.name)
+        self._serial.setText(m.serial_1 % neo.serial)
+        self._firmware.setText(m.firmware_1 % '.'.join(map(str, neo.version)))
+        self._mode_btn.setText(m.change_mode_1 % name_for_mode(neo.mode))
 
     def change_name(self):
         name, ok = QtGui.QInputDialog.getText(
-            self, "Name", "Change the name of the device.",
-            text=self._neo.name)
+            self, m.name, m.change_name_desc, text=self._neo.name)
         if ok:
             self._neo.name = name
-            self._name.setText("Name: %s" % name)
+            self._name.setText(m.name_1 % name)
 
     def manage_keys(self):
-        print "Manage transport keys"
+        print m.manage_keys
 
     def change_mode(self):
         current = MODES.keys().index(name_for_mode(self._neo.mode))
         res = QtGui.QInputDialog.getItem(
-            self, "Set mode", "Set the connection mode used by your YubiKey "
-            "NEO.\nFor this setting to take effect, you will need to unplug, "
-            "and re-attach your YubiKey.", MODES.keys(), current, False)
+            self, m.change_mode, m.change_mode_desc, MODES.keys(), current,
+            False)
         if res[1]:
             mode = MODES[res[0]]
             if self._neo.mode != mode:
                 self._neo.set_mode(mode)
-                self._mode_btn.setText(
-                    "Change connection mode [%s]" % res[0])
+                self._mode_btn.setText(m.change_mode_1 % res[0])
 
                 remove_dialog = QtGui.QMessageBox(self)
-                remove_dialog.setWindowTitle("Change mode")
+                remove_dialog.setWindowTitle(m.change_mode)
                 remove_dialog.setIcon(QtGui.QMessageBox.Information)
-                remove_dialog.setText(
-                    "\nRemove your YubiKey NEO now.\n")
+                remove_dialog.setText(m.remove_device)
                 remove_dialog.setStandardButtons(QtGui.QMessageBox.NoButton)
                 self._neo.removed.connect(remove_dialog.accept)
                 remove_dialog.exec_()
 
 
 class AppsTab(QtGui.QWidget):
+    applet = QtCore.Signal(Applet)
 
     def __init__(self, parent, index):
         super(AppsTab, self).__init__()
@@ -166,14 +166,40 @@ class AppsTab(QtGui.QWidget):
         self._apps_list.doubleClicked.connect(self.open_app)
         layout.addWidget(self._apps_list)
 
+        self._install_cap_btn = QtGui.QPushButton(m.install_cap)
+        self._install_cap_btn.clicked.connect(self.install_cap)
+        layout.addWidget(self._install_cap_btn)
+
         layout.addStretch()
         self.setLayout(layout)
 
         parent.currentChanged.connect(self.tab_changed)
 
+    def install_cap(self):
+        path = settings.value('filepicker/path', None)
+        (cap, _) = QtGui.QFileDialog.getOpenFileName(self, m.select_cap,
+                                                     path, "*.cap")
+        if not cap:
+            return
+        settings.setValue('filepicker/path', os.path.dirname(cap))
+        worker = QtCore.QCoreApplication.instance().worker
+        self._cap = os.path.basename(cap)
+        worker.post(m.installing, partial(self._neo.install_app, cap),
+                    self.install_done)
+
+    @QtCore.Slot(object)
+    def install_done(self, status):
+        if status:
+            print status
+            QtGui.QMessageBox.warning(self, m.error_installing,
+                                      m.error_installing_1 % self._cap)
+        self.set_neo(self._neo)
+
     def open_app(self, index):
-        # print index.data()
-        pass
+        readable = index.data()
+        aid = readable[readable.rindex('(') + 1:readable.rindex(')')]
+        appletmanager = QtCore.QCoreApplication.instance().appletmanager
+        self.applet.emit(appletmanager.get_applet(aid))
 
     def tab_changed(self, index):
         if index != self.index:
@@ -185,15 +211,15 @@ class AppsTab(QtGui.QWidget):
                     self._neo.unlock()
                 except Exception:
                     pw, ok = QtGui.QInputDialog.getText(
-                        self, "Transport key required",
-                        "Managing apps on this YubiKey NEO requires a "
-                        "password")
+                        self, m.key_required, m.key_required_desc)
                     if not ok:
                         self.parent.setCurrentIndex(0)
                         return
                     self._neo.key = pw
 
-            self._apps = filter(None, map(get_applet, self._neo.list_apps()))
+            appletmanager = QtCore.QCoreApplication.instance().appletmanager
+            self._apps = filter(None, map(appletmanager.get_applet,
+                                          self._neo.list_apps()))
             self._apps_list.model().setStringList(
                 map(lambda app: "%s (%s)" % (app.name, app.aid), self._apps))
         except AttributeError:
@@ -204,7 +230,7 @@ class AppsTab(QtGui.QWidget):
         self._neo = neo
         if not neo or not neo.has_ccid:
             self.parent.setTabEnabled(self.index, False)
-            self.parent.setTabToolTip(self.index, "Requires CCID mode")
+            self.parent.setTabToolTip(self.index, m.requires_ccid)
             return
 
         self.parent.setTabEnabled(self.index, True)
@@ -213,8 +239,11 @@ class AppsTab(QtGui.QWidget):
         if neo.locked:
             try:
                 neo.unlock()
-                self._apps = filter(None, map(get_applet, neo.list_apps()))
-                self._apps_list.model().setStringList(
-                    map(lambda app: "%s (%s)" % (app.name, app.aid), self._apps))
             except:
-                pass
+                return
+
+        appletmanager = QtCore.QCoreApplication.instance().appletmanager
+        self._apps = filter(None, map(appletmanager.get_applet,
+                                      neo.list_apps()))
+        self._apps_list.model().setStringList(
+            map(lambda app: "%s (%s)" % (app.name, app.aid), self._apps))
