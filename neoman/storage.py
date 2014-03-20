@@ -26,13 +26,60 @@
 # POSSIBILITY OF SUCH DAMAGE.
 import os
 from PySide import QtCore
+from hashlib import sha1
 
 __all__ = [
     'CONFIG_HOME',
-    'settings'
+    'settings',
+    'capstore'
 ]
 
 CONFIG_HOME = os.path.join(os.path.expanduser('~'), '.neoman')
 
 settings = QtCore.QSettings(os.path.join(CONFIG_HOME, 'settings.ini'),
                             QtCore.QSettings.IniFormat)
+
+
+class AppletCapStore(object):
+
+    def __init__(self, basedir):
+        self._dir = basedir
+
+    def _build_fname(self, aid, version):
+        return os.path.join(self._dir, aid, '%s.cap' % version)
+
+    def _validate_hash(self, fname, cap_sha1):
+        print "hash"
+        with open(fname, 'rb') as cap:
+            return sha1(cap.read()).hexdigest() == cap_sha1
+
+    def has_file(self, aid, version, cap_sha1=None):
+        fname = self._build_fname(aid, version)
+        if os.path.isfile(fname):
+            if cap_sha1 and not self._validate_hash(fname, cap_sha1):
+                return False
+            return True
+        return False
+
+    def get_filename(self, aid, version, cap_sha1=None):
+        fname = self._build_fname(aid, version)
+        if not self.has_file(aid, version):
+            raise ValueError("File not found: %s" % fname)
+        if cap_sha1 and not self._validate_hash(fname, cap_sha1):
+            raise ValueError("Incorrect SHA1 hash!")
+        return fname
+
+    def store_data(self, aid, version, data, cap_sha1=None):
+        fname = self._build_fname(aid, version)
+        QtCore.QDir.root().mkpath(os.path.dirname(fname))
+        target = QtCore.QFile(fname)
+        target.open(QtCore.QIODevice.WriteOnly)
+        if target.write(data) == -1:
+            raise ValueError("Unable to write data!")
+        target.close()
+        if cap_sha1 and not self._validate_hash(fname, cap_sha1):
+            target.remove()
+            raise ValueError("Incorrect SHA1 hash!")
+
+
+capstore = AppletCapStore(os.path.join(CONFIG_HOME, 'applets'))

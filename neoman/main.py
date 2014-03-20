@@ -29,8 +29,9 @@ import sys
 from PySide import QtGui, QtCore
 from neoman.view.main import MainWindow
 from neoman.model.neo import AvailableNeos
-from neoman import __version__ as version
-
+from neoman.model.applet import AppletManager
+from neoman.worker import Worker
+from neoman import __version__ as version, messages as m
 
 if getattr(sys, 'frozen', False):
     # we are running in a PyInstaller bundle
@@ -46,23 +47,48 @@ if sys.platform == 'darwin':
         QtGui.QFont.insertSubstitution(".Lucida Grande UI", "Lucida Grande")
 
 
-QtCore.QCoreApplication.setOrganizationName('Yubico')
-QtCore.QCoreApplication.setOrganizationDomain('yubico.com')
-QtCore.QCoreApplication.setApplicationName('YubiKey NEO Manager')
+class NeomanApplication(QtGui.QApplication):
+
+    def __init__(self, argv):
+        super(NeomanApplication, self).__init__(argv)
+
+        self._set_basedir()
+
+        m._translate(self)
+
+        QtCore.QCoreApplication.setOrganizationName(m.organization)
+        QtCore.QCoreApplication.setOrganizationDomain(m.domain)
+        QtCore.QCoreApplication.setApplicationName(m.app_name)
+
+        self.available_neos = AvailableNeos()
+        self.available_neos.start()
+        self.aboutToQuit.connect(self.available_neos.stop)
+
+        self.appletmanager = AppletManager()
+        self.window = self._create_window()
+
+        self.worker = Worker(self.window)
+        self.aboutToQuit.connect(self.worker.work_thread.quit)
+        self.appletmanager.update()
+
+    def _set_basedir(self):
+        if getattr(sys, 'frozen', False):
+            # we are running in a PyInstaller bundle
+            self.basedir = sys._MEIPASS
+        else:
+            # we are running in a normal Python environment
+            self.basedir = os.path.dirname(__file__)
+
+    def _create_window(self):
+        window = MainWindow()
+        window.setWindowTitle(m.win_title_1 % version)
+        window.setWindowIcon(QtGui.QIcon(
+            os.path.join(self.basedir, 'neoman.png')))
+        window.show()
+        window.raise_()
+        return window
 
 
 def main():
-    app = QtGui.QApplication(sys.argv)
-
-    available_neos = AvailableNeos()
-    available_neos.start()
-    app.aboutToQuit.connect(available_neos.stop)
-    app.available_neos = available_neos
-
-    window = MainWindow()
-    window.setWindowTitle("YubiKey NEO Manager (%s)" % version)
-    window.setWindowIcon(QtGui.QIcon(os.path.join(basedir, 'neoman.png')))
-    window.show()
-    window.raise_()
-
+    app = NeomanApplication(sys.argv)
     sys.exit(app.exec_())

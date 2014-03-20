@@ -25,10 +25,22 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 from PySide import QtCore, QtGui
-from neoman.device import open_first_device
+from neoman.device import open_all_devices
 from neoman.storage import settings
+from functools import wraps
 
 DEFAULT_KEY = "404142434445464748494a4b4c4d4e4f"
+
+
+def with_mutex(mutex, func):
+    @wraps(func)
+    def inner(*args, **kwargs):
+        try:
+            mutex.lock()
+            return func(*args, **kwargs)
+        finally:
+            mutex.unlock()
+    return inner
 
 
 class YubiKeyNeo(QtCore.QObject):
@@ -50,8 +62,9 @@ class YubiKeyNeo(QtCore.QObject):
             device.key = self.key.decode('hex')
 
     def _set_device(self, device):
-        assert self.serial == device.serial
-        assert self.version == device.version
+        if self.serial != device.serial or self.version != device.version:
+            print self.serial, self.version, device.serial, device.version
+            raise ValueError("New device must have same serial/version.")
         self._dev = device
         self._mode = device.mode
         if device.has_ccid:
@@ -81,7 +94,10 @@ class YubiKeyNeo(QtCore.QObject):
             self._mutex.lock()
             if not self._dev:
                 raise AttributeError(name)
-            return getattr(self._dev, name)
+            attr = getattr(self._dev, name)
+            if hasattr(attr, '__call__'):
+                attr = with_mutex(self._mutex, attr)
+            return attr
         finally:
             self._mutex.unlock()
 
@@ -156,6 +172,7 @@ class AvailableNeos(QtCore.QThread):
             self._mutex.unlock()
 
     def run(self):
+        self.discover_devices()  # Discover initial devices.
         while self._running:
             if QtGui.QApplication.activeWindow():  # Only if we have focus
                 self.discover_devices()
@@ -163,15 +180,14 @@ class AvailableNeos(QtCore.QThread):
 
     def discover_devices(self):
         neos = self.get()
+        existing_devs = []
         for neo in neos:
             if neo._dev:
                 neo._mutex.lock()
+                existing_devs.append(neo._dev)
                 neo._dev = None
 
-        single = open_first_device()
-
-        # Currently only a single device is supported.
-        discovered = [single] if single else []
+        discovered = open_all_devices(existing_devs)
 
         new_neos = []
         for dev in discovered:

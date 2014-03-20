@@ -25,42 +25,92 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from PySide import QtCore, QtNetwork
+from neoman.storage import CONFIG_HOME, capstore
+from neoman import messages as m
+import os
+import json
+
+
+__all__ = ['Applet', 'AppletManager']
+
+
+DB_FILE = os.path.join(CONFIG_HOME, "appletdb.json")
+
 
 class Applet(object):
 
-    def __init__(self, aid, name, description, latest_version="unknown",
-                 cap_file=None, tabs=None):
+    def __init__(self, aid, name, description, version="unknown",
+                 cap_url=None, cap_sha1=None, allow_uninstall=True, tabs=None):
         self.aid = aid
         self.name = name
         self.description = description
-        self.latest_version = latest_version
-        self.cap_file = cap_file
-        self.tabs = tabs if tabs else {}
+        self.latest_version = version
+        self.cap_url = cap_url
+        self.cap_sha1 = cap_sha1
+        self.allow_uninstall = allow_uninstall
+        self.tabs = tabs or {}
 
     def __str__(self):
         return self.name
 
+    @property
+    def is_downloaded(self):
+        return capstore.has_file(self.aid, self.latest_version)
 
-APPLETS = [
-    Applet("a0000005272001", "YubiKey", "YubiKey OTP applet."),
-    Applet("a0000005272101", "YubiOATH", "YubiOATH applet."),
-    #Applet("a0000005272102", "Yubico Bitcoin", "Yubico bitcoin applet."),
-    Applet("d27600012401", "OpenPGP", "Open PGP applet.")
-]
-
-HIDDEN = [
-    "a0000000035350"  # Security Domain
-]
+    @property
+    def cap_file(self):
+        return capstore.get_filename(self.aid, self.latest_version,
+                                     self.cap_sha1)
 
 
-def get_applets():
-    return APPLETS
+class AppletManager(object):
 
+    def __init__(self):
+        self._hidden = []
+        self._applets = []
+        self._read_db()
 
-def get_applet(aid):
-    if aid in HIDDEN:
-        return None
-    for applet in APPLETS:
-        if applet.aid == aid:
-            return applet
-    return Applet(aid, "Unknown", "Unknown applet")
+    def update(self):
+        worker = QtCore.QCoreApplication.instance().worker
+        worker.download_bg(self._db_url, self._updated)
+
+    def _updated(self, data):
+        if not isinstance(data, QtNetwork.QNetworkReply.NetworkError):
+            try:
+                data = json.loads(data.data())
+                with open(DB_FILE, 'w') as db:
+                    json.dump(data, db)
+                if data['location'] != self._db_url:
+                    self._db_url = data['location']
+                    self.update()
+                else:
+                    self._read_db()
+            except:
+                pass  # Ignore
+
+    def _read_db(self):
+        try:
+            with open(DB_FILE, 'r') as db:
+                data = json.load(db)
+        except:
+            basedir = QtCore.QCoreApplication.instance().basedir
+            path = os.path.join(basedir, 'appletdb.json')
+            with open(path, 'r') as db:
+                data = json.load(db)
+        self._applets = []
+        for applet in data['applets']:
+            self._applets.append(Applet(**applet))
+        self._hidden = data['hidden']
+        self._db_url = data['location']
+
+    def get_applets(self):
+        return self._applets
+
+    def get_applet(self, aid):
+        if aid in self._hidden:
+            return None
+        for applet in self._applets:
+            if aid.startswith(applet.aid):
+                return applet
+        return Applet(aid, m.unknown, m.unknown_applet)

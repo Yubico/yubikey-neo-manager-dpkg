@@ -1,3 +1,208 @@
+2014-03-20  Dain Nilsson <dain@yubico.com>
+
+	* scripts/neoman.1: Updated man page.
+
+2014-03-20  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS for release.
+
+2014-03-20  Dain Nilsson <dain@yubico.com>
+
+	* README: Updated build intructions in README.
+
+2014-03-20  Dain Nilsson <dain@yubico.com>
+
+	* resources/neoman.pkgproj: Use relative paths in neoman.pkgproj
+
+2014-03-20  Dain Nilsson <dain@yubico.com>
+
+	* resources/neoman.pkgproj: Added OSX Packages project for building
+	an OSX installer.
+
+2014-03-20  Dain Nilsson <dain@yubico.com>
+
+	* resources/osx-patch-ccid, resources/osx-patch-ccid.sh: rename
+
+2014-03-20  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS.
+
+2014-03-20  Dain Nilsson <dain@yubico.com>
+
+	* resources/libccid-yubikey.diff, resources/osx-patch-ccid.sh: Added
+	CCID patch for OSX.
+
+2014-03-19  Dain Nilsson <dain@yubico.com>
+
+	* README, neoman/view/applet.py: Fix type.
+
+2014-03-19  Dain Nilsson <dain@yubico.com>
+
+	* neoman/appletdb.json, neoman/messages.py, neoman/model/neo.py,
+	neoman/view/applet.py: Reorganized Applet layout.
+
+2014-03-19  Dain Nilsson <dain@yubico.com>
+
+	* neoman/appletdb.json, neoman/view/applet.py: Updated appletdb.
+
+2014-03-19  Dain Nilsson <dain@yubico.com>
+
+	* neoman/model/applet.py, neoman/storage.py: Only hash after getting
+	a file, and before using it.
+
+2014-03-19  Dain Nilsson <dain@yubico.com>
+
+	* MANIFEST.in, neoman.spec, neoman/model/applet.py: Fix paths for
+	PyInstaller.
+
+2014-03-19  Dain Nilsson <dain@yubico.com>
+
+	* MANIFEST.in: Updated MANIFEST adding icons.
+
+2014-03-19  Dain Nilsson <dain@yubico.com>
+
+	* neoman/main.py, neoman/messages.py, neoman/view/applet.py,
+	neoman/view/main.py, neoman/view/nav.py, neoman/worker.py: Added
+	installation status icons.
+
+2014-03-18  Dain Nilsson <dain@yubico.com>
+
+	* neoman/main.py, neoman/model/applet.py, neoman/view/nav.py,
+	neoman/view/neo.py: Fixed appletdb downloading.
+
+2014-03-18  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py: Fix device leak.
+
+2014-03-18  Dain Nilsson <dain@yubico.com>
+
+	* neoman/appletdb.json, neoman/model/applet.py,
+	neoman/view/applet.py: Prevent uninstallation of Manager and YubiKey
+	OTP applets.
+
+2014-03-18  Dain Nilsson <dain@yubico.com>
+
+	* neoman/appletdb.json, neoman/main.py, neoman/messages.py,
+	neoman/model/applet.py, neoman/storage.py, neoman/view/applet.py,
+	neoman/view/nav.py, neoman/view/neo.py, neoman/worker.py: 
+	Externalized applet db.
+
+2014-03-17  Dain Nilsson <dain@yubico.com>
+
+	* neoman/model/applet.py, neoman/view/applet.py: Disable
+	(un-)install button when no device present.
+
+2014-03-17  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device.py, neoman/messages.py, neoman/model/applet.py,
+	neoman/storage.py, neoman/view/applet.py, neoman/worker.py: 
+	Implement applet downloading.
+
+2014-03-17  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device.py, neoman/messages.py, neoman/view/applet.py,
+	neoman/view/nav.py: Properly close HID devices before re-opening.
+
+2014-03-17  Dain Nilsson <dain@yubico.com>
+
+	* neoman/view/main.py: Stricter typing of Slot.
+
+2014-03-17  Dain Nilsson <dain@yubico.com>
+
+	* neoman/view/applet.py, neoman/view/main.py, neoman/view/nav.py,
+	neoman/view/neo.py: Reorganized some Signals and Slots.
+
+2014-03-17  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py, neoman/model/neo.py,
+	neoman/view/applet.py, neoman/view/neo.py: Cache applets and re-use
+	devices.
+
+2014-03-14  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py, neoman/exc.py, neoman/main.py,
+	neoman/messages.py, neoman/view/applet.py, neoman/view/main.py,
+	neoman/view/neo.py, neoman/worker.py: Got running blocking tasks in
+	the background to work with callbacks.
+
+2014-03-13  Dain Nilsson <dain@yubico.com>
+
+	* neoman/main.py, neoman/worker.py: Refactored application
+	initialization into subclass.
+
+2014-03-13  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device.py, neoman/device_ccid.py, neoman/main.py,
+	neoman/messages.py, neoman/model/applet.py, neoman/model/neo.py,
+	neoman/storage.py, neoman/view/applet.py, neoman/worker.py: 
+	Implement applet installation/deletion.
+
+2014-03-12  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device.py, neoman/device_ccid.py, neoman/main.py,
+	neoman/messages.py, neoman/model/applet.py, neoman/model/neo.py,
+	neoman/view/applet.py, neoman/view/nav.py, neoman/view/neo.py,
+	neoman/ykneomgr.py: Externalized strings. Updated for libykneomgr
+	0.0.1
+
+2014-02-10  Dain Nilsson <dain@yubico.com>
+
+	* MANIFEST.in: Removed pyinstaller.py from MANIFEST.in.
+
+2014-01-30  Dain Nilsson <dain@yubico.com>
+
+	* scripts/neoman: Exit on SIGINT.
+
+2013-12-06  Dain Nilsson <dain@yubico.com>
+
+	* neoman/model/neo.py: Fixed device equality check.
+
+2013-11-26  Dain Nilsson <dain@yubico.com>
+
+	* neoman.spec: append_pkg = False for OSX.
+
+2013-11-26  Dain Nilsson <dain@yubico.com>
+
+	* resources/neoman.desktop: Added linux desktop entry.
+
+2013-11-26  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, neoman/__init__.py: Bumped version.
+
+2013-11-26  Dain Nilsson <dain@yubico.com>
+
+	* MANIFEST.in, resources/neoman.xpm: Added XPM for Debian and
+	included resources in the build.
+
+2013-11-26  Dain Nilsson <dain@yubico.com>
+
+	* resources/neoman.nsi: Use modern UI for NSIS.
+
+2013-11-25  Dain Nilsson <dain@yubico.com>
+
+	* neoman.spec, resources/neoman.nsi: Add NSIS installer for Windows.
+
+2013-11-18  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py, neoman/device_hid.py, neoman/model/neo.py: 
+	Replaced asserts.
+
+2013-11-13  Dain Nilsson <dain@yubico.com>
+
+	* neoman.spec: Re-fix zipping.
+
+2013-11-13  Dain Nilsson <dain@yubico.com>
+
+	* neoman.spec: Fixed zipping.
+
+2013-11-13  Dain Nilsson <dain@yubico.com>
+
+	* neoman.spec: Added zipping to build process.
+
+2013-11-13  Dain Nilsson <dain@yubico.com>
+
+	* BLURB: Added BLURB
+
 2013-11-13  Dain Nilsson <dain@yubico.com>
 
 	* NEWS: Updated NEWS for release.

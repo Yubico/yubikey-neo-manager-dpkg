@@ -25,4 +25,12 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-__version__ = "0.0.2"
+__all__ = [
+    'YkNeoMgrError'
+]
+
+
+class YkNeoMgrError(Exception):
+    def __init__(self, code):
+        super(YkNeoMgrError, self).__init__("ykneomgr error: %d" % code)
+        self.status = code
