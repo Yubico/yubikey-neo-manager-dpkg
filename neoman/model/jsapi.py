@@ -24,5 +24,42 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+from PySide import QtCore, QtWebKit
+import os
 
-__version__ = "0.1.0"
+
+class JS_API(QtCore.QObject):
+
+    def __init__(self, neo, applet):
+        super(JS_API, self).__init__()
+        self._neo = neo
+        self._applet = applet
+        self._webpage = QtWebKit.QWebPage()
+        self._frame = self._webpage.mainFrame()
+        self._frame.addToJavaScriptWindowObject('_JS_API', self)
+
+    def __enter__(self):
+        basedir = QtCore.QCoreApplication.instance().basedir
+        path = os.path.join(basedir, 'js_api.js')
+        with open(path, 'r') as f:
+            self._frame.evaluateJavaScript(f.read())
+        return self
+
+    def __exit__(self, type, value, traceback):
+        del self._frame
+
+    def run(self, script):
+        return self._frame.evaluateJavaScript(script)
+
+    @QtCore.Slot(str)
+    def log(self, line):
+        print "LOG [%s]: %s" % (self._applet.name, line)
+
+    @QtCore.Slot(str, result=str)
+    def send_apdu(self, apdu):
+        return self._neo.send_apdu(apdu.decode('hex')).encode('hex')
+
+    def _aid(self):
+        return self._applet.aid
+
+    aid = QtCore.Property(unicode, _aid)

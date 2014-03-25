@@ -15,6 +15,7 @@ neoman/exc.py
 neoman/icon_installed.png
 neoman/icon_not_installed.png
 neoman/icon_some_installed.png
+neoman/js_api.js
 neoman/libloader.py
 neoman/main.py
 neoman/messages.py
@@ -25,6 +26,7 @@ neoman/ykneomgr.py
 neoman/ykpers.py
 neoman/model/__init__.py
 neoman/model/applet.py
+neoman/model/jsapi.py
 neoman/model/neo.py
 neoman/view/__init__.py
 neoman/view/applet.py
