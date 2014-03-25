@@ -17,7 +17,7 @@ Architecture: all
 Depends: ${python:Depends},
          ${misc:Depends},
          libykpers-1-1 (>= 1.11),
-         libykneomgr0 (>= 0.0.2)
+         libykneomgr0 (>= 0.1.2)
 XB-Python-Version: ${python:Versions}
 Provides: ${python:Provides}
 Description: Graphical interface for YubiKey NEO management
