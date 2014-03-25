@@ -1,3 +1,68 @@
+2014-03-25  Dain Nilsson <dain@yubico.com>
+
+	* MANIFEST.in: Updated MANIFEST.
+
+2014-03-25  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS for release.
+
+2014-03-25  Dain Nilsson <dain@yubico.com>
+
+	* neoman/__init__.py, neoman/device_ccid.py, neoman/model/jsapi.py: 
+	Re-auth after deselecting GP.
+
+2014-03-25  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS.
+
+2014-03-25  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py, neoman/model/jsapi.py, neoman/view/neo.py: 
+	Re-select GP after selecting other applets.
+
+2014-03-25  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py, neoman/model/jsapi.py: Fixes.
+
+2014-03-25  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py, neoman/js_api.js: Don't block neomans
+	select commands.
+
+2014-03-25  Dain Nilsson <dain@yubico.com>
+
+	* README, neoman.spec, neoman/appletdb.json, neoman/js_api.js,
+	neoman/model/applet.py, neoman/model/jsapi.py: Auto-select applets
+	for JS API.
+
+2014-03-25  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py, neoman/ykneomgr.py: Add send_apdu command.
+
+2014-03-25  Dain Nilsson <dain@yubico.com>
+
+	* neoman/appletdb.json, neoman/model/applet.py, setup.py: Verify
+	applet db files.
+
+2014-03-24  Dain Nilsson <dain@yubico.com>
+
+	* neoman/appletdb.json, neoman/device_ccid.py,
+	neoman/device_hid.py, neoman/js_api.js, neoman/messages.py,
+	neoman/model/applet.py, neoman/model/jsapi.py,
+	neoman/view/applet.py: Started work on per-applet JS API.
+
+2014-03-21  Dain Nilsson <dain@yubico.com>
+
+	* neoman/storage.py: Removed debug print statement.
+
+2014-03-20  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, neoman/__init__.py: Bumped version.
+
+2014-03-20  Klas Lindfors <klas@yubico.com>
+
+	* neoman/appletdb.json: update text on ykneo-piv
+
 2014-03-20  Dain Nilsson <dain@yubico.com>
 
 	* scripts/neoman.1: Updated man page.

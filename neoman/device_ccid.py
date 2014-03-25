@@ -91,14 +91,22 @@ class CCIDDevice(BaseDevice):
         check(ykneomgr_modeswitch(self._dev, mode))
         self._mode = mode
 
+    def send_apdu(self, apdu):
+        self._locked = True
+        buf_size = c_size_t(1024)
+        resp = create_string_buffer(buf_size.value)
+        check(ykneomgr_send_apdu(self._dev, apdu, len(apdu), resp,
+                                 byref(buf_size)))
+        return resp.raw[0:buf_size.value]
+
     def list_apps(self, refresh=False):
         if refresh or self._apps is None:
             if self.locked:
                 self.unlock()
             size = c_size_t()
-            ykneomgr_applet_list(self._dev, None, byref(size))
+            check(ykneomgr_applet_list(self._dev, None, byref(size)))
             applist = create_string_buffer(size.value)
-            ykneomgr_applet_list(self._dev, applist, byref(size))
+            check(ykneomgr_applet_list(self._dev, applist, byref(size)))
             self._apps = applist.raw.strip('\0').split('\0')
 
         return self._apps

@@ -26,6 +26,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from PySide import QtCore, QtNetwork
+from Crypto.Signature import PKCS1_PSS
+from Crypto.Hash import SHA256
+from Crypto.PublicKey import RSA
+from neoman.model.jsapi import JS_API
 from neoman.storage import CONFIG_HOME, capstore
 from neoman import messages as m
 import os
@@ -40,16 +44,16 @@ DB_FILE = os.path.join(CONFIG_HOME, "appletdb.json")
 
 class Applet(object):
 
-    def __init__(self, aid, name, description, version="unknown",
-                 cap_url=None, cap_sha1=None, allow_uninstall=True, tabs=None):
+    def __init__(self, aid, name, description, **kwargs):
         self.aid = aid
         self.name = name
         self.description = description
-        self.latest_version = version
-        self.cap_url = cap_url
-        self.cap_sha1 = cap_sha1
-        self.allow_uninstall = allow_uninstall
-        self.tabs = tabs or {}
+        self.latest_version = kwargs.get('version', 'unknown')
+        self.cap_url = kwargs.get('cap_url', None)
+        self.cap_sha1 = kwargs.get('cap_sha1', None)
+        self.allow_uninstall = kwargs.get('allow_uninstall', True)
+        self._js_version = kwargs.get('js_version', None)
+        self.tabs = kwargs.get('tabs', {})
 
     def __str__(self):
         return self.name
@@ -62,6 +66,11 @@ class Applet(object):
     def cap_file(self):
         return capstore.get_filename(self.aid, self.latest_version,
                                      self.cap_sha1)
+
+    def get_version(self, neo):
+        if self._js_version:
+            with JS_API(neo, self) as api:
+                return api.run(self._js_version)
 
 
 class AppletManager(object):
@@ -79,6 +88,8 @@ class AppletManager(object):
         if not isinstance(data, QtNetwork.QNetworkReply.NetworkError):
             try:
                 data = json.loads(data.data())
+                data = self._verify(**data)
+
                 with open(DB_FILE, 'w') as db:
                     json.dump(data, db)
                 if data['location'] != self._db_url:
@@ -88,6 +99,16 @@ class AppletManager(object):
                     self._read_db()
             except:
                 pass  # Ignore
+
+    def _verify(self, message, signature):
+        key = RSA.importKey(self._pub_key)
+        h = SHA256.new()
+        h.update(message)
+        verifier = PKCS1_PSS.new(key)
+        if verifier.verify(h, signature.decode('base64')):
+            return json.loads(message.decode('base64'))
+        raise ValueError("Invalid file signature!")
+
 
     def _read_db(self):
         try:
@@ -103,6 +124,7 @@ class AppletManager(object):
             self._applets.append(Applet(**applet))
         self._hidden = data['hidden']
         self._db_url = data['location']
+        self._pub_key = data['pubkey']
 
     def get_applets(self):
         return self._applets
