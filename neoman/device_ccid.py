@@ -35,9 +35,7 @@ if ykneomgr_global_init(1 if os.environ.has_key('NEOMAN_DEBUG') else 0) != 0:
     raise Exception("Unable to initialize ykneomgr")
 
 
-def check(status):
-    if status != 0:
-        raise YkNeoMgrError(status)
+libversion = ykneomgr_check_version(None)
 
 
 class CCIDDevice(BaseDevice):
@@ -49,12 +47,18 @@ class CCIDDevice(BaseDevice):
         self._locked = True
         self._serial = ykneomgr_get_serialno(dev) or None
         self._mode = ykneomgr_get_mode(dev)
-        self._version = [
+        self._version = (
             ykneomgr_get_version_major(dev),
             ykneomgr_get_version_minor(dev),
             ykneomgr_get_version_build(dev)
-        ]
+        )
         self._apps = None
+        self._broken = False
+
+    def check(self, status):
+        if status != 0:
+            self._broken = True
+            raise YkNeoMgrError(status)
 
     @property
     def key(self):
@@ -84,29 +88,30 @@ class CCIDDevice(BaseDevice):
         self._locked = True
         if not self._key:
             raise ValueError("No transport key provided!")
-        check(ykneomgr_authenticate(self._dev, self._key))
+        self.check(ykneomgr_authenticate(self._dev, self._key))
         self._locked = False
 
     def set_mode(self, mode):
-        check(ykneomgr_modeswitch(self._dev, mode))
+        self.check(ykneomgr_modeswitch(self._dev, mode))
         self._mode = mode
 
     def send_apdu(self, apdu):
         self._locked = True
         buf_size = c_size_t(1024)
         resp = create_string_buffer(buf_size.value)
-        check(ykneomgr_send_apdu(self._dev, apdu, len(apdu), resp,
+        self.check(ykneomgr_send_apdu(self._dev, apdu, len(apdu), resp,
                                  byref(buf_size)))
         return resp.raw[0:buf_size.value]
 
-    def list_apps(self, refresh=False):
+    #Deprecated, DO NOT USE!
+    def _list_apps(self, refresh=False):
         if refresh or self._apps is None:
             if self.locked:
                 self.unlock()
             size = c_size_t()
-            check(ykneomgr_applet_list(self._dev, None, byref(size)))
+            self.check(ykneomgr_applet_list(self._dev, None, byref(size)))
             applist = create_string_buffer(size.value)
-            check(ykneomgr_applet_list(self._dev, applist, byref(size)))
+            self.check(ykneomgr_applet_list(self._dev, applist, byref(size)))
             self._apps = applist.raw.strip('\0').split('\0')
 
         return self._apps
@@ -115,19 +120,22 @@ class CCIDDevice(BaseDevice):
         if self.locked:
             self.unlock()
         aid_bytes = aid.decode('hex')
-        check(ykneomgr_applet_delete(self._dev, aid_bytes, len(aid_bytes)))
-        self.list_apps(True)
+        self.check(ykneomgr_applet_delete(self._dev, aid_bytes, len(aid_bytes)))
 
     def install_app(self, path):
         if self.locked:
             self.unlock()
-        check(ykneomgr_applet_install(self._dev, create_string_buffer(path)))
-        self.list_apps(True)
+        self.check(ykneomgr_applet_install(self._dev, create_string_buffer(path)))
 
     def close(self):
         if hasattr(self, '_dev'):
             ykneomgr_done(self._dev)
             del self._dev
+
+
+def check(status):
+    if status != 0:
+        raise YkNeoMgrError(status)
 
 
 def open_first_device():
@@ -153,8 +161,11 @@ def open_all_devices(existing=None):
     devices = []
     for d in existing or []:
         if getattr(d, '_dev_str', None) in names:
-            devices.append(d)
-            names.remove(d._dev_str)
+            if d._broken:
+                d.close()
+            else:
+                devices.append(d)
+                names.remove(d._dev_str)
     for name in names:
         if not dev:
             dev = POINTER(ykneomgr_dev)()

@@ -26,27 +26,19 @@
 # POSSIBILITY OF SUCH DAMAGE.
 import os
 from PySide import QtGui, QtCore
-from collections import OrderedDict
 from functools import partial
 from neoman import messages as m
 from neoman.storage import settings
 from neoman.model.neo import YubiKeyNeo
 from neoman.model.applet import Applet
-
-MODES = OrderedDict([
-    (m.hid, 0x00),
-    (m.ccid, 0x01),
-    (m.ccid_touch_eject, 0x81),
-    (m.hid_ccid, 0x02),
-    (m.hid_ccid_touch_eject, 0x82)
-])
+from neoman.model.modes import MODE
+from neoman.view.tabs import TabWidgetWithAbout
 
 
-def name_for_mode(mode):
-    return next((n for n, md in MODES.items() if md == mode), None)
+U2F_URL = "http://www.yubico.com/products/yubikey-hardware/yubikey-neo/yubikey-neo-u2f/"
 
 
-class NeoPage(QtGui.QTabWidget):
+class NeoPage(TabWidgetWithAbout):
     _neo = QtCore.Signal(YubiKeyNeo)
     applet = QtCore.Signal(Applet)
 
@@ -57,10 +49,11 @@ class NeoPage(QtGui.QTabWidget):
         self._neo.connect(settings_tab.set_neo)
         self.addTab(settings_tab, m.settings)
 
-        apps = AppsTab(self, 1)
-        self._neo.connect(apps.set_neo)
-        apps.applet.connect(self._set_applet)
-        self.addTab(apps, m.installed_apps)
+        if QtCore.QCoreApplication.instance().devmode:
+            apps = AppsTab(self, 1)
+            self._neo.connect(apps.set_neo)
+            apps.applet.connect(self._set_applet)
+            self.addTab(apps, m.installed_apps)
 
     @QtCore.Slot(YubiKeyNeo)
     def setNeo(self, neo):
@@ -80,21 +73,28 @@ class SettingsTab(QtGui.QWidget):
         self._name = QtGui.QLabel()
         self._serial = QtGui.QLabel()
         self._firmware = QtGui.QLabel()
+        self._u2f = QtGui.QLabel()
+        self._u2f.setOpenExternalLinks(True)
 
         layout = QtGui.QVBoxLayout()
 
         name_row = QtGui.QHBoxLayout()
         name_row.addWidget(self._name)
-        button = QtGui.QPushButton(m.change_name)
-        button.clicked.connect(self.change_name)
-        name_row.addWidget(button)
+        self._name_btn = QtGui.QPushButton(m.change_name)
+        self._name_btn.clicked.connect(self.change_name)
+        name_row.addWidget(self._name_btn)
 
         details_row = QtGui.QHBoxLayout()
         details_row.addWidget(self._serial)
         details_row.addWidget(self._firmware)
 
+        u2f_row = QtGui.QHBoxLayout()
+        u2f_row.addWidget(QtGui.QLabel())
+        u2f_row.addWidget(self._u2f)
+
         layout.addLayout(name_row)
         layout.addLayout(details_row)
+        layout.addLayout(u2f_row)
 
         button = QtGui.QPushButton(m.manage_keys)
         button.clicked.connect(self.manage_keys)
@@ -105,6 +105,10 @@ class SettingsTab(QtGui.QWidget):
         self._mode_btn.clicked.connect(self.change_mode)
         layout.addWidget(self._mode_btn)
 
+        mode_note = QtGui.QLabel(m.note_1 % m.mode_note)
+        mode_note.setWordWrap(True)
+        layout.addWidget(mode_note)
+
         layout.addStretch()
         self.setLayout(layout)
 
@@ -114,10 +118,15 @@ class SettingsTab(QtGui.QWidget):
         if not neo:
             return
 
+        self._name_btn.setDisabled(neo.serial is None)
         self._name.setText(m.name_1 % neo.name)
         self._serial.setText(m.serial_1 % neo.serial)
         self._firmware.setText(m.firmware_1 % '.'.join(map(str, neo.version)))
-        self._mode_btn.setText(m.change_mode_1 % name_for_mode(neo.mode))
+        if neo.u2f_capable:
+            self._u2f.setText(m.u2f_1 % m.u2f_supported)
+        else:
+            self._u2f.setText(m.u2f_1 % m.u2f_not_supported_1 % U2F_URL)
+        self._mode_btn.setText(m.change_mode_1 % MODE.name_for_mode(neo.mode))
 
     def change_name(self):
         name, ok = QtGui.QInputDialog.getText(
@@ -130,23 +139,90 @@ class SettingsTab(QtGui.QWidget):
         print m.manage_keys
 
     def change_mode(self):
-        current = MODES.keys().index(name_for_mode(self._neo.mode))
-        res = QtGui.QInputDialog.getItem(
-            self, m.change_mode, m.change_mode_desc, MODES.keys(), current,
-            False)
-        if res[1]:
-            mode = MODES[res[0]]
-            if self._neo.mode != mode:
-                self._neo.set_mode(mode)
-                self._mode_btn.setText(m.change_mode_1 % res[0])
+        mode = ModeDialog.change_mode(self._neo, self)
 
-                remove_dialog = QtGui.QMessageBox(self)
-                remove_dialog.setWindowTitle(m.change_mode)
-                remove_dialog.setIcon(QtGui.QMessageBox.Information)
-                remove_dialog.setText(m.remove_device)
-                remove_dialog.setStandardButtons(QtGui.QMessageBox.NoButton)
-                self._neo.removed.connect(remove_dialog.accept)
-                remove_dialog.exec_()
+        if mode is not None:
+            self._neo.set_mode(mode)
+            self._mode_btn.setText(m.change_mode_1 % MODE.name_for_mode(mode))
+
+            remove_dialog = QtGui.QMessageBox(self)
+            remove_dialog.setWindowTitle(m.change_mode)
+            remove_dialog.setIcon(QtGui.QMessageBox.Information)
+            remove_dialog.setText(m.remove_device)
+            remove_dialog.setStandardButtons(QtGui.QMessageBox.NoButton)
+            self._neo.removed.connect(remove_dialog.accept)
+            remove_dialog.exec_()
+
+
+class ModeDialog(QtGui.QDialog):
+    def __init__(self, parent=None):
+        super(ModeDialog, self).__init__(parent)
+
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(QtGui.QLabel(m.change_mode_desc))
+
+        boxes = QtGui.QHBoxLayout()
+        self._otp = QtGui.QCheckBox(m.otp)
+        self._otp.clicked.connect(self._state_changed)
+        boxes.addWidget(self._otp)
+        self._ccid = QtGui.QCheckBox(m.ccid)
+        self._ccid.clicked.connect(self._state_changed)
+        boxes.addWidget(self._ccid)
+        self._u2f = QtGui.QCheckBox(m.u2f)
+        self._u2f.clicked.connect(self._state_changed)
+        boxes.addWidget(self._u2f)
+        layout.addLayout(boxes)
+
+        buttons = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok |
+                                         QtGui.QDialogButtonBox.Cancel)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        self._ok = buttons.button(QtGui.QDialogButtonBox.Ok)
+        layout.addWidget(buttons)
+
+        self.setWindowTitle(m.change_mode)
+        self.setLayout(layout)
+
+    def _state_changed(self):
+        self._ok.setDisabled(not any(self.flags))
+
+    @property
+    def flags(self):
+        return self._otp.isChecked(), self._ccid.isChecked(), \
+            self._u2f.isChecked()
+
+    @property
+    def mode(self):
+        return MODE.mode_for_flags(*self.flags)
+
+    @mode.setter
+    def mode(self, value):
+        otp, ccid, u2f, touch_eject = MODE.flags_for_mode(value)
+        self._otp.setChecked(otp)
+        self._ccid.setChecked(ccid)
+        self._u2f.setChecked(u2f)
+
+    @property
+    def has_u2f(self):
+        return self._u2f.isVisible()
+
+    @has_u2f.setter
+    def has_u2f(self, value):
+        self._u2f.setVisible(value)
+
+    @classmethod
+    def change_mode(cls, neo, parent=None):
+        dialog = cls(parent)
+        dialog.mode = neo.mode
+        dialog.has_u2f = neo.u2f_capable
+        if dialog.exec_():
+            mode = dialog.mode
+            legacy = neo.version < (3, 3, 0)
+            if legacy and mode == 2:  # Always set 82 instead of 2
+                mode = 0x82
+            return mode
+        else:
+            return None
 
 
 class AppsTab(QtGui.QWidget):
@@ -210,6 +286,7 @@ class AppsTab(QtGui.QWidget):
                 try:
                     self._neo.unlock()
                 except Exception as e:
+                    del self._neo.key
                     print e
                     pw, ok = QtGui.QInputDialog.getText(
                         self, m.key_required, m.key_required_desc)

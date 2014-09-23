@@ -24,9 +24,8 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-MODE_HID = 0
-MODE_CCID = 1
-MODE_HID_CCID = 2
+
+from neoman.model.modes import MODE
 
 
 class BaseDevice(object):
@@ -37,7 +36,11 @@ class BaseDevice(object):
 
     @property
     def has_ccid(self):
-        return self.mode & 0x0f in [MODE_CCID, MODE_HID_CCID]
+        return MODE.flags_for_mode(self.mode)[1]
+
+    @property
+    def u2f_capable(self):
+        return self.version >= (3, 3, 0)
 
     @property
     def serial(self):
@@ -55,43 +58,44 @@ class BaseDevice(object):
         return "NEO[mode=%x, serial=%s]" % (self.mode, self.serial)
 
 
-def open_first_device():
-    for _ in range(3):  # Retry a few times as this sometimes fails.
-        try:
-            from neoman.device_ccid import open_first_device as open_ccid
-            return open_ccid()
-        except Exception:
-            pass
-    try:
-        from neoman.device_hid import open_first_device as open_hid
-        return open_hid()
-    except Exception as e:
-        return None
-
-
 def open_all_devices(existing=None):
     devices = []
-    has_composite = False
+    has_otp = False
+    has_u2f = False
+
+    # CCID devices
     try:
         from neoman.device_ccid import open_all_devices as open_ccid_all
         for dev in open_ccid_all(existing):
-            has_composite = has_composite or dev.mode & 0xf == MODE_HID_CCID
+            has_otp = has_otp or MODE.flags_for_mode(dev.mode)[0]
+            has_u2f = has_u2f or MODE.flags_for_mode(dev.mode)[2]
             devices.append(dev)
     except Exception:
         pass
-    try:
-        from neoman.device_hid import open_first_device as open_hid
-        # Close any exisitng HID devices as we are going to reopen them.
-        for dev in existing:
-            if not dev.has_ccid:
-                dev.close()
-        dev = open_hid()
-        # Avoid adding any HID devices which do not expose a serial if we know
-        # there are composite devices (as to not add them twice).
-        if not dev.serial and has_composite:
-            dev.close()
-        else:
+
+    # OTP devices
+    if not has_otp:
+        try:
+            from neoman.device_otp import (OTPDevice,
+                                           open_first_device as open_otp)
+            # Close any existing OTP devices as we are going to reopen them.
+            for dev in existing:
+                if isinstance(dev, OTPDevice):
+                    dev.close()
+            dev = open_otp()
             devices.append(dev)
-    except Exception:
-        pass
+            has_otp = True
+        except Exception:
+            pass
+
+    # U2F devices
+    if not has_u2f and not has_otp:
+        try:
+            from neoman.device_u2f import open_all_devices as open_u2f_all
+            devices.extend(open_u2f_all())
+            return devices
+        except Exception:
+            raise
+            pass
+
     return devices

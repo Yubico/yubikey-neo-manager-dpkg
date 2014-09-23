@@ -139,13 +139,12 @@ class NavModel(QtCore.QAbstractItemModel):
         new_applets = []
         installed = {app for neo in self.neo_list for app in neo.list_apps()}
         appletmanager = QtCore.QCoreApplication.instance().appletmanager
-        for applet in appletmanager.get_applets():
-            if applet.is_downloaded:
-                new_applets.append(applet)
-            elif any([aid.startswith(applet.aid) for aid in installed]):
-                new_applets.append(applet)
-            elif applet.cap_url:
-                new_applets.append(applet)
+        if QtCore.QCoreApplication.instance().devmode:
+            new_applets = appletmanager.get_applets()
+        else:
+            for applet in appletmanager.get_applets():
+                if any([aid.startswith(applet.aid) for aid in installed]):
+                    new_applets.append(applet)
 
         self.beginInsertRows(parent, 0, len(new_applets) - 1)
         self.applets = new_applets
@@ -185,7 +184,8 @@ class NavModel(QtCore.QAbstractItemModel):
         if index.isValid():
             if role == QtCore.Qt.DisplayRole:
                 return str(index.internalPointer())
-            elif role == QtCore.Qt.DecorationRole:
+            elif QtCore.QCoreApplication.instance().devmode and \
+                    role == QtCore.Qt.DecorationRole:
                 return self._get_icon(index)
 
     def _get_icon(self, index, force_refresh=False):

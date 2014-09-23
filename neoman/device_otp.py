@@ -26,13 +26,17 @@
 # POSSIBILITY OF SUCH DAMAGE.
 from neoman.ykpers import *
 from ctypes import byref, c_uint
-from neoman.device import BaseDevice, MODE_HID
+from neoman.device import BaseDevice
+from neoman.model.modes import MODE
 
 if not yk_init():
     raise Exception("Unable to initialize ykpers")
 
 
-class HIDDevice(BaseDevice):
+libversion = ykpers_check_version(None)
+
+
+class OTPDevice(BaseDevice):
 
     def __init__(self, dev):
         self._dev = dev
@@ -46,19 +50,19 @@ class HIDDevice(BaseDevice):
         status = ykds_alloc()
         try:
             if yk_get_status(dev, status):
-                self._version = [
+                self._version = (
                     ykds_version_major(status),
                     ykds_version_minor(status),
                     ykds_version_build(status)
-                ]
+                )
             else:
-                self._version = [0, 0, 0]
+                self._version = (0, 0, 0)
         finally:
             ykds_free(status)
 
     @property
     def mode(self):
-        return MODE_HID
+        return MODE.mode_for_flags(True, False, False)
 
     @property
     def serial(self):
@@ -92,8 +96,8 @@ def open_first_device():
     if not dev:
         raise Exception("Unable to open YubiKey NEO!")
 
-    hid_device = HIDDevice(dev)
-    if hid_device.version[0] < 3:
+    otp_device = OTPDevice(dev)
+    if otp_device.version[0] < 3:
         raise Exception("Device is not a YubiKey NEO!")
 
-    return hid_device
+    return otp_device

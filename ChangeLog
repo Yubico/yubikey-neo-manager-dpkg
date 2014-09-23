@@ -1,3 +1,175 @@
+2014-09-16  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS for release.
+
+2014-09-16  Dain Nilsson <dain@yubico.com>
+
+	* neoman/messages.py, neoman/view/tabs.py: Tweak about dialog text.
+
+2014-09-16  Dain Nilsson <dain@yubico.com>
+
+	* neoman/messages.py, neoman/view/welcome.py: Show about button from
+	welcome page.
+
+2014-09-16  Dain Nilsson <dain@yubico.com>
+
+	* README, neoman/view/tabs.py: Changed about dialog icon.
+
+2014-09-16  Dain Nilsson <dain@yubico.com>
+
+	* neoman/messages.py, neoman/view/tabs.py: Added file missing from
+	last commit. Changed about text.
+
+2014-09-16  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py, neoman/device_otp.py,
+	neoman/device_u2f.py, neoman/messages.py, neoman/u2fh.py,
+	neoman/view/applet.py, neoman/view/neo.py, neoman/ykneomgr.py,
+	neoman/ykpers.py: Added about dialog with library versions.
+
+2014-09-16  Dain Nilsson <dain@yubico.com>
+
+	* neoman/messages.py, neoman/view/neo.py: Change FIDO message.
+
+2014-09-15  Dain Nilsson <dain@yubico.com>
+
+	* neoman/messages.py, neoman/view/neo.py: Show if a device is U2F
+	capable.
+
+2014-09-11  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_u2f.py, neoman/u2fh.py: Updated to changes in
+	libu2f-host.
+
+2014-09-11  Dain Nilsson <dain@yubico.com>
+
+	* neoman/view/main.py: Increased minimum height to prevent clipping
+	on OS X.
+
+2014-09-10  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device.py, neoman/device_ccid.py, neoman/device_u2f.py,
+	neoman/view/neo.py: More U2F refinements.
+
+2014-09-10  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device.py, neoman/device_hid.py, neoman/device_otp.py: 
+	Renamed HIDDevice to OTPDevice.
+
+2014-09-10  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device.py, neoman/device_u2f.py, neoman/u2fh.py: Updated
+	u2flib-host.
+
+2014-09-09  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device.py, neoman/device_u2f.py, neoman/model/neo.py: 
+	Remove prints and dead code.
+
+2014-09-09  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device.py, neoman/device_u2f.py, neoman/model/neo.py,
+	neoman/u2fh.py, neoman/view/neo.py: Added support for multiple U2F
+	devices through libu2f-host.
+
+2014-09-09  Dain Nilsson <dain@yubico.com>
+
+	* README: Updated instructions for building/signing on OS X.
+
+2014-09-09  Dain Nilsson <dain@yubico.com>
+
+	* resources/neoman.pkgproj, resources/osx-patch-ccid: More OSX
+	installer tweaks.
+
+2014-09-09  Dain Nilsson <dain@yubico.com>
+
+	* resources/neoman.pkgproj: Add old patch to pkgproj and no longer
+	require restart (fixes #3)
+
+2014-09-09  Dain Nilsson <dain@yubico.com>
+
+	* resources/osx-patch-ccid: OSX patch tweaks.
+
+2014-09-08  Dain Nilsson <dain@yubico.com>
+
+	* resources/osx-patch-ccid: Fix patch script.
+
+2014-09-08  Dain Nilsson <dain@yubico.com>
+
+	* resources/libccid-yubikey-old.diff,
+	resources/libccid-yubikey.diff, resources/osx-patch-ccid: Improved
+	CCID device list patching.
+
+2014-09-08  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, README, neoman/__init__.py: Bumped version and updated NEWS
+	and README.
+
+2014-09-08  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py, neoman/device_u2f.py, neoman/model/neo.py,
+	neoman/view/nav.py, neoman/view/neo.py: Remove icons for available
+	apps. Minor cleanups.
+
+2014-09-08  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device.py, neoman/device_u2f.py, neoman/u2fh.py: Add
+	support for U2F devices by using libu2f-host.
+
+2014-09-03  Dain Nilsson <dain@yubico.com>
+
+	* resources/libccid-yubikey.diff: Updated OSX libccid patch.
+
+2014-09-03  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device.py, neoman/device_ccid.py, neoman/messages.py,
+	neoman/model/neo.py: Deal with YubiKey NEOs in composite mode
+	better.
+
+2014-09-03  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_hid.py, neoman/messages.py, neoman/view/neo.py: 
+	Improved mode switching options.
+
+2014-09-03  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device.py, neoman/device_ccid.py, neoman/device_hid.py,
+	neoman/messages.py, neoman/model/modes.py, neoman/model/neo.py,
+	neoman/view/neo.py: Refactored mode handling.
+
+2014-09-02  Dain Nilsson <dain@yubico.com>
+
+	* neoman/main.py: Remove print statement.
+
+2014-09-02  Dain Nilsson <dain@yubico.com>
+
+	* neoman/appletdb.json: Updated appletdb.json
+
+2014-09-02  Dain Nilsson <dain@yubico.com>
+
+	* neoman/appletdb.json, neoman/js_api.js: Re-indent.
+
+2014-09-02  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device.py, neoman/device_ccid.py, neoman/device_hid.py,
+	neoman/js_api.js, neoman/messages.py, neoman/model/applet.py,
+	neoman/model/jsapi.py, neoman/model/neo.py, neoman/view/applet.py,
+	neoman/view/neo.py: Added U2F modes. Check installed apps by
+	probing.
+
+2014-09-02  Dain Nilsson <dain@yubico.com>
+
+	* neoman/main.py, neoman/view/nav.py: Introduce devmode and only
+	show installed apps when not activated.
+
+2014-09-02  Dain Nilsson <dain@yubico.com>
+
+	* resources/osx-patch-ccid: Kill pcscd after applying patch
+
+2014-09-02  Dain Nilsson <dain@yubico.com>
+
+	* neoman/appletdb.json: Updated old information
+
 2014-03-25  Dain Nilsson <dain@yubico.com>
 
 	* MANIFEST.in: Updated MANIFEST.

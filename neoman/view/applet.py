@@ -28,11 +28,12 @@ from PySide import QtGui, QtCore
 from neoman.model.applet import Applet
 from neoman.model.neo import YubiKeyNeo
 from neoman.storage import capstore
+from neoman.view.tabs import TabWidgetWithAbout
 from neoman import messages as m
 from functools import partial
 
 
-class AppletPage(QtGui.QTabWidget):
+class AppletPage(TabWidgetWithAbout):
     applet_status = QtCore.Signal(Applet)
     _applet = QtCore.Signal(Applet)
     _neo = QtCore.Signal(YubiKeyNeo)
@@ -87,11 +88,12 @@ class OverviewTab(QtGui.QWidget):
 
         col_1.addWidget(self._name)
         col_1.addWidget(self._status)
-        col_1.addWidget(self._latest_version)
         #col_1.addWidget(self._aid)
 
         col_2.addWidget(self._neo_selector)
-        col_2.addWidget(self._install_button)
+        if QtCore.QCoreApplication.instance().devmode:
+            col_1.addWidget(self._latest_version)
+            col_2.addWidget(self._install_button)
 
         header.addLayout(col_1)
         header.addLayout(col_2)
@@ -178,11 +180,9 @@ class OverviewTab(QtGui.QWidget):
     def neo_or_applet_changed(self, neo, applet):
         if not applet:
             return
-        installed = neo and any((x.startswith(applet.aid)
-                                 for x in neo.list_apps()))
 
+        installed, version = applet.get_status(neo) if neo else (False, None)
         if installed:
-            version = applet.get_version(neo)
             if version:
                 self._status.setText(m.status_1 % (m.installed_1 % version))
             else:
