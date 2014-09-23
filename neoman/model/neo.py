@@ -49,17 +49,15 @@ class YubiKeyNeo(QtCore.QObject):
     def __init__(self, device):
         super(YubiKeyNeo, self).__init__()
 
-        self._mutex = QtCore.QMutex()
+        self._mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
 
-        self._dev = device
-        self._mode = device.mode
         self._serial = device.serial
         self._version = device.version
+        self._apps = None
 
         self._group = self._serial if self._serial else "NOSERIAL"
 
-        if device.has_ccid:
-            device.key = self.key.decode('hex')
+        self._set_device(device)
 
     def _set_device(self, device):
         if self.serial != device.serial or self.version != device.version:
@@ -67,6 +65,7 @@ class YubiKeyNeo(QtCore.QObject):
             raise ValueError("New device must have same serial/version.")
         self._dev = device
         self._mode = device.mode
+        #self._apps = None
         if device.has_ccid:
             device.key = self.key.decode('hex')
 
@@ -101,6 +100,9 @@ class YubiKeyNeo(QtCore.QObject):
         finally:
             self._mutex.unlock()
 
+    def __delattr__(self, key):
+        del self[key]
+
     def get(self, key, default=None):
         return settings.value('%s/%s' % (self._group, key), default)
 
@@ -134,6 +136,15 @@ class YubiKeyNeo(QtCore.QObject):
             self._mutex.unlock()
 
     @property
+    def has_ccid(self):
+        try:
+            self._mutex.lock()
+            return self._dev and self._dev.has_ccid
+        finally:
+            self._mutex.unlock()
+
+
+    @property
     def mode(self):
         return self._mode
 
@@ -147,6 +158,23 @@ class YubiKeyNeo(QtCore.QObject):
 
     def __str__(self):
         return self.name
+
+    def list_apps(self):
+        try:
+            self._mutex.lock()
+            if not self.has_ccid:
+                return []
+            if self._apps is None:
+                apps = []
+                appletmanager = QtCore.QCoreApplication.instance().appletmanager
+                for applet in appletmanager.get_applets():
+                    installed, version = applet.get_status(self)
+                    if installed:
+                        apps.append(applet.aid)
+                self._apps = apps
+            return self._apps
+        finally:
+            self._mutex.unlock()
 
 
 class AvailableNeos(QtCore.QThread):
@@ -190,16 +218,17 @@ class AvailableNeos(QtCore.QThread):
         discovered = open_all_devices(existing_devs)
 
         new_neos = []
+        dead_neos = neos[:]
         for dev in discovered:
-            for neo in neos:
+            for neo in dead_neos[:]:
                 if dev.serial == neo.serial:
                     neo._set_device(dev)
                     neo._mutex.unlock()
+                    dead_neos.remove(neo)
                     break
             else:
                 new_neos.append(YubiKeyNeo(dev))
 
-        dead_neos = [x for x in neos if not x._dev]
         for neo in dead_neos:
             neos.remove(neo)
             neo.removed.emit()
