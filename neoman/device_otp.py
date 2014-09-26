@@ -25,7 +25,7 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 from neoman.ykpers import *
-from ctypes import byref, c_uint
+from ctypes import byref, c_uint, c_int
 from neoman.device import BaseDevice
 from neoman.model.modes import MODE
 
@@ -47,6 +47,14 @@ class OTPDevice(BaseDevice):
         else:
             self._serial = None
 
+        vid = c_int()
+        pid = c_int()
+        try:
+            yk_get_key_vid_pid(dev, byref(vid), byref(pid))
+            self._mode = 0x0f & pid.value
+        except:
+            self._mode = MODE.mode_for_flags(True, False, False)
+
         status = ykds_alloc()
         try:
             if yk_get_status(dev, status):
@@ -62,7 +70,7 @@ class OTPDevice(BaseDevice):
 
     @property
     def mode(self):
-        return MODE.mode_for_flags(True, False, False)
+        return self._mode
 
     @property
     def serial(self):
@@ -91,6 +99,20 @@ class OTPDevice(BaseDevice):
             del self._dev
 
 
+class YKStandardDevice(BaseDevice):
+    supported = False
+    serial = None
+    version = (0, 0, 0)
+    mode = MODE.mode_for_flags(True, False, False)
+
+    def __init__(self, version):
+        self._version = version
+
+    @property
+    def default_name(self):
+        return 'YubiKey %s' % '.'.join(map(str, self._version))
+
+
 def open_first_device():
     dev = yk_open_first_key()
     if not dev:
@@ -98,6 +120,9 @@ def open_first_device():
 
     otp_device = OTPDevice(dev)
     if otp_device.version[0] < 3:
-        raise Exception("Device is not a YubiKey NEO!")
+        try:
+            otp_device = YKStandardDevice(otp_device.version)
+        except Exception as e:
+            print e
 
     return otp_device

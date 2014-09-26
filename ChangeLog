@@ -1,3 +1,58 @@
+2014-09-26  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS for release.
+
+2014-09-26  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, neoman/device.py, neoman/device_otp.py,
+	neoman/device_u2f.py, neoman/messages.py, neoman/model/neo.py,
+	neoman/view/neo.py: Support unsupported devices.
+
+2014-09-26  Dain Nilsson <dain@yubico.com>
+
+	* neoman/appletdb.json: Updated appletdb with latest applets.
+
+2014-09-26  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, neoman/main.py, neoman/messages.py, neoman/view/neo.py: 
+	Disable OTP+U2F compisite modes.
+
+2014-09-23  Dain Nilsson <dain@yubico.com>
+
+	* neoman/view/neo.py: Left-align the U2F label if not showing
+	firmware.
+
+2014-09-23  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, neoman/__init__.py: Bump version and update NEWS.
+
+2014-09-23  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_otp.py, neoman/ykpers.py: Use yk_get_key_vid_pid to
+	get mode in OTP mode.
+
+2014-09-23  Dain Nilsson <dain@yubico.com>
+
+	* README: Document that multi-device support only works for CCID.
+
+2014-09-23  Dain Nilsson <dain@yubico.com>
+
+	* neoman/view/neo.py: Hide firmware label when unknown.
+
+2014-09-22  Dain Nilsson <dain@yubico.com>
+
+	* README: Use the correct project name: 'yubikey-personalization'
+	(fixes #8).
+
+2014-09-22  Dain Nilsson <dain@yubico.com>
+
+	* README: Clarified dependency copying for building binaries (fixes
+	#8).
+
+2014-09-18  Dain Nilsson <dain@yubico.com>
+
+	* neoman/appletdb.json: Updated appletdb.
+
 2014-09-16  Dain Nilsson <dain@yubico.com>
 
 	* NEWS: Updated NEWS for release.

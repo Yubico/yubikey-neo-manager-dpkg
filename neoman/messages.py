@@ -32,6 +32,9 @@ Note: String names must not start with underscore (_).
 
 """
 
+otp_u2f_disabled = "OTP and U2F modes cannot currently both be active."
+
+
 organization = "Yubico"
 domain = "yubico.com"
 app_name = "YubiKey NEO Manager"
@@ -104,6 +107,7 @@ apps = "Available apps"
 installed_apps = "Installed apps"
 unknown = "Unknown"
 unknown_applet = "Unknown applet"
+unsupported_device = "The %s doesn't support this device." % app_name
 about_1 = "About: %s"
 libraries = "Library versions"
 about_link_1 = "For help and discussion, see our <a href=\"%s\">forum</a>."
