@@ -44,6 +44,10 @@ class NeoPage(TabWidgetWithAbout):
 
     def __init__(self):
         super(NeoPage, self).__init__()
+        self._tabs = []
+        self._supported = True
+
+        self._unsupported_tab = UnsupportedTab()
 
         settings_tab = SettingsTab()
         self._neo.connect(settings_tab.set_neo)
@@ -55,13 +59,36 @@ class NeoPage(TabWidgetWithAbout):
             apps.applet.connect(self._set_applet)
             self.addTab(apps, m.installed_apps)
 
+    def addTab(self, tab, title):
+        self._tabs.append((tab, title))
+        if self._supported:
+            super(NeoPage, self).addTab(tab, title)
+
     @QtCore.Slot(YubiKeyNeo)
     def setNeo(self, neo):
+        self._supported = neo and neo.supported
+        self.clear()
+        if self._supported:
+            for (tab, title) in self._tabs:
+                super(NeoPage, self).addTab(tab, title)
+        else:
+            super(NeoPage, self).addTab(self._unsupported_tab, m.settings)
+
         self._neo.emit(neo)
 
     @QtCore.Slot(Applet)
     def _set_applet(self, applet):
         self.applet.emit(applet)
+
+
+class UnsupportedTab(QtGui.QWidget):
+
+    def __init__(self):
+        super(UnsupportedTab, self).__init__()
+
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(QtGui.QLabel(m.unsupported_device))
+        self.setLayout(layout)
 
 
 class SettingsTab(QtGui.QWidget):
@@ -88,13 +115,13 @@ class SettingsTab(QtGui.QWidget):
         details_row.addWidget(self._serial)
         details_row.addWidget(self._firmware)
 
-        u2f_row = QtGui.QHBoxLayout()
-        u2f_row.addWidget(QtGui.QLabel())
-        u2f_row.addWidget(self._u2f)
+        self._u2f_row = QtGui.QHBoxLayout()
+        self._u2f_row.addWidget(QtGui.QLabel())
+        self._u2f_row.addWidget(self._u2f)
 
         layout.addLayout(name_row)
         layout.addLayout(details_row)
-        layout.addLayout(u2f_row)
+        layout.addLayout(self._u2f_row)
 
         button = QtGui.QPushButton(m.manage_keys)
         button.clicked.connect(self.manage_keys)
@@ -121,6 +148,11 @@ class SettingsTab(QtGui.QWidget):
         self._name_btn.setDisabled(neo.serial is None)
         self._name.setText(m.name_1 % neo.name)
         self._serial.setText(m.serial_1 % neo.serial)
+        show_firmware = neo.version != (0, 0, 0)
+        self._u2f_row.setDirection(
+            QtGui.QBoxLayout.LeftToRight if show_firmware else
+            QtGui.QBoxLayout.RightToLeft)
+        self._firmware.setVisible(show_firmware)
         self._firmware.setText(m.firmware_1 % '.'.join(map(str, neo.version)))
         if neo.u2f_capable:
             self._u2f.setText(m.u2f_1 % m.u2f_supported)
@@ -172,6 +204,24 @@ class ModeDialog(QtGui.QDialog):
         self._u2f.clicked.connect(self._state_changed)
         boxes.addWidget(self._u2f)
         layout.addLayout(boxes)
+
+        # Disable OTP in combination with U2F
+        # Remove the rest of this method to re-enable.
+        note = QtGui.QLabel(m.note_1 % m.otp_u2f_disabled)
+
+        def otp_clicked():
+            if self._otp.isChecked() and self._u2f.isChecked():
+                note.setStyleSheet("QLabel { color: red; }")
+                self._u2f.setChecked(False)
+        self._otp.clicked.connect(otp_clicked)
+
+        def u2f_clicked():
+            if self._otp.isChecked() and self._u2f.isChecked():
+                note.setStyleSheet("QLabel { color: red; }")
+                self._otp.setChecked(False)
+        self._u2f.clicked.connect(u2f_clicked)
+        layout.addWidget(note)
+        # End Disable OTP in combination with U2F
 
         buttons = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok |
                                          QtGui.QDialogButtonBox.Cancel)
