@@ -6,12 +6,12 @@ sudo cowbuilder --create --distribution sid --mirror ftp://ftp.se.debian.org/deb
 
 or for Ubuntu 12.04:
 
-sudo cowbuilder --create --distribution precise --components "main universe" --basepath /var/cache/pbuilder/precise.cow
+sudo cowbuilder --create --distribution trusty --components "main universe" --basepath /var/cache/pbuilder/trusty.cow
 
 Optionally update cowbuilder:
 
 sudo cowbuilder --update --basepath /var/cache/pbuilder/sid.cow
-sudo cowbuilder --update --basepath /var/cache/pbuilder/precise.cow
+sudo cowbuilder --update --basepath /var/cache/pbuilder/trusty.cow
 
 Clone the repository:
 
@@ -20,7 +20,7 @@ git clone git@github.com:Yubico/yubikey-neo-manager-dpkg.git
 Build the package:
 
 git-buildpackage --git-pristine-tar --git-builder="pdebuild --auto-debsign --pbuilder cowbuilder -- --basepath /var/cache/pbuilder/sid.cow"
-git-buildpackage --git-pristine-tar --git-builder="pdebuild --auto-debsign --pbuilder cowbuilder -- --basepath /var/cache/pbuilder/precise.cow"
+git-buildpackage --git-pristine-tar --git-builder="pdebuild --auto-debsign --pbuilder cowbuilder -- --basepath /var/cache/pbuilder/trusty.cow"
 
 If all goes well, you should have newly built packages in
 /var/cache/pbuilder/result/.
