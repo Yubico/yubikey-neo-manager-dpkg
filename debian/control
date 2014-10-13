@@ -1,14 +1,14 @@
 Source: yubikey-neo-manager
-Maintainer: Yubico Open Source Maintainers <ossmaint@yubico.com>
-Uploaders: Simon Josefsson <simon@yubico.com>, Klas Lindfors <klas@yubico.com>, Dain Nilsson <dain@yubico.com>
+Maintainer: Debian Authentication Maintainers <pkg-auth-maintainers@lists.alioth.debian.org>
+Uploaders: Dain Nilsson <dain@yubico.com>, Simon Josefsson <simon@josefsson.org>, Klas Lindfors <klas@yubico.com>
 Section: python
 Priority: extra
 Build-Depends: python-setuptools (>= 0.6b3),
                python-all (>= 2.6.6-3),
                debhelper (>= 8),
                python-nose,
-Standards-Version: 3.9.5
-Homepage: https://github.com/Yubico/yubikey-neo-manager
+Standards-Version: 3.9.6
+Homepage: https://developers.yubico.com/yubikey-neo-manager/
 Vcs-Browser: https://github.com/Yubico/yubikey-neo-manager-dpkg
 Vcs-Git: git://github.com/Yubico/yubikey-neo-manager-dpkg.git
 
@@ -22,9 +22,7 @@ Depends: ${python:Depends},
 Recommends: pcscd
 XB-Python-Version: ${python:Versions}
 Provides: ${python:Provides}
-Description: Graphical interface for YubiKey NEO management
- The YubiKey NEO provides extensible functionality in the form of installable
- apps, as well as the functionality of the original YubiKey.
- .
- This is a graphical user interface for configuring a YubiKey NEO that is
- plugged in to your computers USB port.
+Description: YubiKey NEO management graphical user interface
+ The YubiKey NEO support One-Time Password (OTP), smartcard CCID/PCSC,
+ and Universal 2nd Factor (U2F) protocols, and this application allows
+ you to interface to various parts of the device, including mode-switching.
