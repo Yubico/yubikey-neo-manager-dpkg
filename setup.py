@@ -27,6 +27,7 @@
 
 from setuptools import setup
 from release import release
+from qt_resources import qt_resources, qt_sdist
 import re
 
 VERSION_PATTERN = re.compile(r"(?m)^__version__\s*=\s*['\"](.+)['\"]$")
@@ -49,13 +50,15 @@ setup(
     url='https://github.com/Yubico/yubikey-neo-manager',
     license='BSD 2 clause',
     packages=['neoman', 'neoman.model', 'neoman.view'],
-    include_package_data=True,
+    package_data={'neoman': ['appletdb.json', 'js_api.js']},
+    #include_package_data=True,
     scripts=['scripts/neoman'],
     setup_requires=['nose>=1.0'],
     install_requires=['PySide', 'pycrypto'],
     test_suite='nose.collector',
     tests_require=[''],
-    cmdclass={'release': release},
+    cmdclass={'release': release, 'qt_resources': qt_resources,
+              'sdist': qt_sdist},
     classifiers=[
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',

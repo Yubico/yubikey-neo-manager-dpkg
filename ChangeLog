@@ -1,3 +1,41 @@
+2014-10-14  Dain Nilsson <dain@yubico.com>
+
+	* resources/neoman-large.xpm, resources/neoman.xpm,
+	resources/neoman_large.xpm, setup.py: Updated images and fixed
+	build.
+
+2014-10-14  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, qt_resources.py: Update NEWS for release, fix qt_resources
+	command.
+
+2014-10-14  Dain Nilsson <dain@yubico.com>
+
+	* resources/neoman.xpm, resources/neoman_large.xpm: Provide 32x32
+	and 128x128 xpm icons.
+
+2014-10-14  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS.
+
+2014-10-14  Dain Nilsson <dain@yubico.com>
+
+	* .gitignore, MANIFEST.in, neoman/main.py, neoman/view/nav.py,
+	neoman/view/tabs.py, qt_resources.py, setup.py: Compile images into
+	code using pyside-rcc.
+
+2014-10-10  Dain Nilsson <dain@yubico.com>
+
+	* resources/neoman.xpm: Use a higher resolution icon for Linux.
+
+2014-09-26  Dain Nilsson <dain@yubico.com>
+
+	* neoman/__init__.py: Bumped version
+
+2014-09-26  Simon Josefsson <simon@josefsson.org>
+
+	* BLURB: Fix URL.
+
 2014-09-26  Dain Nilsson <dain@yubico.com>
 
 	* NEWS, neoman/__init__.py: Updated NEWS and version.
