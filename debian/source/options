@@ -1,1 +1,1 @@
-extend-diff-ignore=nose-.*.egg/|yubikey_neo_manager.egg-info/requires.txt
+extend-diff-ignore=nose-.*.egg/|yubikey_neo_manager.egg-info/*

@@ -1,2 +1,2 @@
-debian/neoman.xpm usr/share/pixmaps/
+resources/neoman.xpm usr/share/pixmaps/
 debian/neoman.desktop usr/share/applications/
