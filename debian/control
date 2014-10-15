@@ -1,12 +1,14 @@
 Source: yubikey-neo-manager
 Maintainer: Debian Authentication Maintainers <pkg-auth-maintainers@lists.alioth.debian.org>
-Uploaders: Dain Nilsson <dain@yubico.com>, Simon Josefsson <simon@josefsson.org>, Klas Lindfors <klas@yubico.com>
+Uploaders: Dain Nilsson <dain@yubico.com>,
+           Simon Josefsson <simon@josefsson.org>,
+           Klas Lindfors <klas@yubico.com>
 Section: python
 Priority: extra
-Build-Depends: python-setuptools (>= 0.6b3),
+Build-Depends: debhelper (>= 8),
                python-all (>= 2.6.6-3),
-               debhelper (>= 8),
                python-nose,
+               python-setuptools (>= 0.6b3)
 Standards-Version: 3.9.6
 Homepage: https://developers.yubico.com/yubikey-neo-manager/
 Vcs-Browser: https://github.com/Yubico/yubikey-neo-manager-dpkg
@@ -14,11 +16,11 @@ Vcs-Git: git://github.com/Yubico/yubikey-neo-manager-dpkg.git
 
 Package: yubikey-neo-manager
 Architecture: all
-Depends: ${python:Depends},
-         ${misc:Depends},
-         libykpers-1-1 (>= 1.11),
+Depends: libu2f-host0 (>= 0.0),
          libykneomgr0 (>= 0.1.2),
-         libu2f-host0 (>= 0.0)
+         libykpers-1-1 (>= 1.11),
+         ${misc:Depends},
+         ${python:Depends}
 Recommends: pcscd
 XB-Python-Version: ${python:Versions}
 Description: YubiKey NEO management graphical user interface
