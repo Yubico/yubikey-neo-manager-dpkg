@@ -21,7 +21,6 @@ Depends: ${python:Depends},
          libu2f-host0 (>= 0.0)
 Recommends: pcscd
 XB-Python-Version: ${python:Versions}
-Provides: ${python:Provides}
 Description: YubiKey NEO management graphical user interface
  The YubiKey NEO support One-Time Password (OTP), smartcard CCID/PCSC,
  and Universal 2nd Factor (U2F) protocols, and this application allows
