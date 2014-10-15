@@ -4,7 +4,7 @@ Uploaders: Dain Nilsson <dain@yubico.com>,
            Simon Josefsson <simon@josefsson.org>,
            Klas Lindfors <klas@yubico.com>
 Section: python
-Priority: extra
+Priority: optional
 Build-Depends: debhelper (>= 8),
                python-all (>= 2.6.6-3),
                python-nose,
