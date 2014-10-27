@@ -6,6 +6,7 @@ Uploaders: Dain Nilsson <dain@yubico.com>,
 Section: python
 Priority: optional
 Build-Depends: debhelper (>= 9),
+               dh-exec,
                python-all (>= 2.6.6-3),
                python-nose,
                python-setuptools (>= 0.6b3)
