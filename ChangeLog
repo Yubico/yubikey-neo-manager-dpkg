@@ -1,3 +1,62 @@
+2014-10-27  Dain Nilsson <dain@yubico.com>
+
+	* resources/neoman-large.xpm, resources/neoman.xpm: Updated
+	graphics.
+
+2014-10-27  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS for release.
+
+2014-10-27  Dain Nilsson <dain@yubico.com>
+
+	* README: Updated README with revised instructions for building
+	binaries.
+
+2014-10-27  Dain Nilsson <dain@yubico.com>
+
+	* resources/osx-patch-ccid: Restart pcscd if running.
+
+2014-10-27  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, resources/neoman.pkgproj: Fixed neoman.pkgproj
+
+2014-10-27  Dain Nilsson <dain@yubico.com>
+
+	* README, neoman/view/main.py: Increase min window height a tad.
+
+2014-10-27  Dain Nilsson <dain@yubico.com>
+
+	* neoman.spec, resources/neoman.spec: Moved neoman.spec to
+	resources/ and added it to the dist
+
+2014-10-27  Dain Nilsson <dain@yubico.com>
+
+	* resources/libccid-yubikey-old.diff,
+	resources/libccid-yubikey.diff, resources/osx-patch-ccid: More
+	robust libccid patching.
+
+2014-10-27  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py, neoman/device_u2f.py,
+	neoman/model/applet.py, neoman/model/neo.py, neoman/view/neo.py,
+	neoman/ykpers.py: Fix formatting.
+
+2014-10-23  Dain Nilsson <dain@yubico.com>
+
+	* README.adoc: Added README.adoc symlink for Github.
+
+2014-10-15  Simon Josefsson <simon@josefsson.org>
+
+	* COPYING: Bump copyright years.
+
+2014-10-14  Dain Nilsson <dain@yubico.com>
+
+	* qt_resources.py, release.py: Use setuptools.
+
+2014-10-14  Dain Nilsson <dain@yubico.com>
+
+	* neoman/__init__.py: Bumped version.
+
 2014-10-14  Dain Nilsson <dain@yubico.com>
 
 	* resources/neoman-large.xpm, resources/neoman.xpm,
