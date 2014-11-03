@@ -25,7 +25,7 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 from PySide import QtCore, QtGui
-from neoman.device import open_all_devices
+from neoman.device import open_all_devices, ResetStateException
 from neoman.storage import settings
 from functools import wraps
 
@@ -162,7 +162,7 @@ class YubiKeyNeo(QtCore.QObject):
     def list_apps(self):
         try:
             self._mutex.lock()
-            if not self.has_ccid:
+            if self.device_type != 'CCID':
                 return []
             if self._apps is None:
                 apps = []
@@ -188,6 +188,7 @@ class AvailableNeos(QtCore.QThread):
 
         self._neos = []
         self._running = True
+        self._sleep = 1000
 
     def stop(self):
         self._running = False
@@ -205,7 +206,7 @@ class AvailableNeos(QtCore.QThread):
         while self._running:
             if QtGui.QApplication.activeWindow():  # Only if we have focus
                 self.discover_devices()
-            self.msleep(1000)
+            self.msleep(self._sleep)
 
     def discover_devices(self):
         neos = self.get()
@@ -216,13 +217,23 @@ class AvailableNeos(QtCore.QThread):
                 existing_devs.append(neo._dev)
                 neo._dev = None
 
-        discovered = open_all_devices(existing_devs)
-
         new_neos = []
         dead_neos = neos[:]
+        state_reset = False  # Set True after state reset
+
+        try:
+            discovered = open_all_devices(existing_devs)
+            if self._sleep > 1000:  # State reset!
+                self._sleep = 1000  # Reset sleep time
+                state_reset = True
+        except ResetStateException as e:
+            discovered = e.devices
+            self._sleep = 3500  # Increase sleep time
+
         for dev in discovered:
             for neo in dead_neos[:]:
-                if dev.serial == neo.serial and dev.version == neo.version:
+                if dev.serial == neo.serial and dev.version == neo.version \
+                        and dev.device_type == dev.device_type:
                     neo._set_device(dev)
                     neo._mutex.unlock()
                     dead_neos.remove(neo)
@@ -234,7 +245,7 @@ class AvailableNeos(QtCore.QThread):
             neos.remove(neo)
             neo.removed.emit()
             neo._mutex.unlock()
-        if new_neos or dead_neos:
+        if new_neos or dead_neos or state_reset:
             self._mutex.lock()
             self._neos = neos + new_neos
             neos_copy = self._neos[:]
