@@ -1,3 +1,25 @@
+2014-11-03  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS for release.
+
+2014-11-03  Dain Nilsson <dain@yubico.com>
+
+	* neoman/model/neo.py: Improved NEO state resetting for Yosemite.
+
+2014-10-31  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device.py, neoman/device_ccid.py, neoman/device_otp.py,
+	neoman/device_u2f.py, neoman/model/neo.py: Fix device detection
+	issues with Yosemite.
+
+2014-10-28  Dain Nilsson <dainzor@gmail.com>
+
+	* : Merge pull request #22 from philipithomas/gitignore Gitignore additions
+
+2014-10-27  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, neoman/__init__.py: Bumped version.
+
 2014-10-27  Dain Nilsson <dain@yubico.com>
 
 	* resources/neoman-large.xpm, resources/neoman.xpm: Updated
@@ -40,6 +62,10 @@
 	* neoman/device_ccid.py, neoman/device_u2f.py,
 	neoman/model/applet.py, neoman/model/neo.py, neoman/view/neo.py,
 	neoman/ykpers.py: Fix formatting.
+
+2014-10-23  Philip I. Thomas <pthomas@opendns.com>
+
+	* .gitignore: Gitignore additions
 
 2014-10-23  Dain Nilsson <dain@yubico.com>
 
