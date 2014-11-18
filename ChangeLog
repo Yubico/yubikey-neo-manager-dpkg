@@ -1,3 +1,20 @@
+2014-11-18  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, neoman/view/neo.py: Re-enable U2F+OTP modes.
+
+2014-11-10  Dain Nilsson <dain@yubico.com>
+
+	* resources/neoman.desktop: Fix neoman.desktop (fixes #25).
+
+2014-11-03  Dain Nilsson <dain@yubico.com>
+
+	* : Remove OS X installer image (Yosemite partially blocks it from
+	view).
+
+2014-11-03  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, neoman/__init__.py: Bumped version
+
 2014-11-03  Dain Nilsson <dain@yubico.com>
 
 	* NEWS: Updated NEWS for release.
