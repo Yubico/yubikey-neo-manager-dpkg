@@ -1,5 +1,5 @@
-yubikey-neo-manager (0.2.6-1) unstable; urgency=low
+yubikey-neo-manager (1.0.0-1) unstable; urgency=low
 
   * Initial release (Closes: #765177)
 
- -- Dain Nilsson <dain@yubico.com>  Tue, 18 Nov 2014 16:28:16 +0100
+ -- Dain Nilsson <dain@yubico.com>  Wed, 19 Nov 2014 09:58:22 +0100
