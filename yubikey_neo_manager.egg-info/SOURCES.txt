@@ -42,6 +42,7 @@ qt_resources/icon_not_installed.png
 qt_resources/icon_some_installed.png
 qt_resources/neoman.png
 resources/installer_bg.png
+resources/linux-fix-ccid-udev
 resources/neoman-large.png
 resources/neoman.desktop
 resources/neoman.icns

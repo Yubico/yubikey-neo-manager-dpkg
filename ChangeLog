@@ -1,3 +1,37 @@
+2014-12-01  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS for release.
+
+2014-11-27  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, README, neoman/main.py: Font fix for Yosemite.
+
+2014-11-27  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_otp.py: Fix name.
+
+2014-11-27  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, neoman/__init__.py, neoman/device_otp.py: Added recognition
+	for YubiKey Plus.
+
+2014-11-21  Dain Nilsson <dainzor@gmail.com>
+
+	* : Merge pull request #27 from jlrgraham/osx_version_number Include correct version number in OS X app bundle.
+
+2014-11-19  Dain Nilsson <dain@yubico.com>
+
+	* resources/linux-fix-ccid-udev: Restart PCSCD.
+
+2014-11-19  Dain Nilsson <dain@yubico.com>
+
+	* resources/linux-fix-ccid-udev: Added script to patch
+	libccid_Info.plist and add Udev rule.
+
+2014-11-19  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, neoman/__init__.py: Bumped version.
+
 2014-11-19  Dain Nilsson <dain@yubico.com>
 
 	* NEWS, neoman/__init__.py: Promoted version to 1.x.x
