@@ -7,10 +7,11 @@ Section: python
 Priority: optional
 Build-Depends: debhelper (>= 9),
                dh-exec,
-               python-all (>= 2.7),
+               python (>= 2.7),
                python-nose,
                python-setuptools (>= 0.6b3)
 Standards-Version: 3.9.6
+X-Python-Version: >= 2.7
 Homepage: https://developers.yubico.com/yubikey-neo-manager/
 Vcs-Browser: https://github.com/Yubico/yubikey-neo-manager-dpkg
 Vcs-Git: git://github.com/Yubico/yubikey-neo-manager-dpkg.git
@@ -23,7 +24,6 @@ Depends: libu2f-host0 (>= 0.0),
          ${misc:Depends},
          ${python:Depends}
 Recommends: pcscd
-XB-Python-Version: ${python:Versions}
 Description: YubiKey NEO management graphical user interface
  The YubiKey NEO support One-Time Password (OTP), smartcard CCID/PCSC,
  and Universal 2nd Factor (U2F) protocols, and this application allows
