@@ -1,3 +1,67 @@
+2015-04-10  Dain Nilsson <dain@yubico.com>
+
+	* resources/neoman.spec: Don't build a zip file.
+
+2015-04-10  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS for release.
+
+2015-04-09  Dain Nilsson <dain@yubico.com>
+
+	* resources/neoman.desktop: Set StartupNotify=false in
+	neoman.desktop.
+
+2015-04-08  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py, neoman/device_otp.py,
+	neoman/device_u2f.py, neoman/exc.py, neoman/messages.py,
+	neoman/view/neo.py: Display error message if mode switching fails
+	(fixes #33).
+
+2015-04-07  Dain Nilsson <dain@yubico.com>
+
+	* resources/linux-fix-ccid-udev: Added YK4 devices to libccid.
+
+2015-04-07  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, neoman/__init__.py, neoman/device.py, neoman/device_otp.py,
+	neoman/device_u2f.py, neoman/main.py, neoman/messages.py,
+	neoman/view/neo.py, neoman/view/tabs.py, neoman/view/welcome.py,
+	neoman/worker.py: Added support for Edge.
+
+2015-02-18  Dain Nilsson <dain@yubico.com>
+
+	* resources/linux-fix-ccid-udev: Added Plus device to udev file.
+
+2015-02-16  Dain Nilsson <dain@yubico.com>
+
+	* resources/linux-fix-ccid-udev: Add Udev file regardless if libccid
+	is installed or not.
+
+2015-02-10  Dain Nilsson <dain@yubico.com>
+
+	* neoman/appletdb.json: Updated appletdb with new U2F AID.
+
+2014-12-08  Dain Nilsson <dain@yubico.com>
+
+	* resources/osx-patch-ccid: Made osx patch more verbose.
+
+2014-12-01  Henrik Stråth <minisu@users.noreply.github.com>
+
+	* README: Update README
+
+2014-12-01  Henrik Stråth <minisu@users.noreply.github.com>
+
+	* NEWS: Update NEWS
+
+2014-12-01  Dain Nilsson <dain@yubico.com>
+
+	* resources/neoman.spec: Changed name of Windows installer.
+
+2014-12-01  Dain Nilsson <dainzor@gmail.com>
+
+	* : Merge pull request #30 from lowks/patch-1 Update setup.py
+
 2014-12-01  Dain Nilsson <dain@yubico.com>
 
 	* NEWS: Updated NEWS for release.

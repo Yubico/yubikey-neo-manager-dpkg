@@ -29,6 +29,7 @@ from PySide import QtGui, QtCore
 from functools import partial
 from neoman import messages as m
 from neoman.storage import settings
+from neoman.exc import ModeSwitchError
 from neoman.model.neo import YubiKeyNeo
 from neoman.model.applet import Applet
 from neoman.model.modes import MODE
@@ -37,6 +38,15 @@ from neoman.view.tabs import TabWidgetWithAbout
 
 U2F_URL = "http://www.yubico.com/products/yubikey-hardware/yubikey-neo/" \
     + "yubikey-neo-u2f/"
+
+
+def get_text(*args, **kwargs):
+    flags = (
+        QtCore.Qt.WindowTitleHint |
+        QtCore.Qt.WindowSystemMenuHint
+    )
+    kwargs['flags'] = flags
+    return QtGui.QInputDialog.getText(*args, **kwargs)
 
 
 class NeoPage(TabWidgetWithAbout):
@@ -133,9 +143,9 @@ class SettingsTab(QtGui.QWidget):
         self._mode_btn.clicked.connect(self.change_mode)
         layout.addWidget(self._mode_btn)
 
-        mode_note = QtGui.QLabel(m.note_1 % m.mode_note)
-        mode_note.setWordWrap(True)
-        layout.addWidget(mode_note)
+        self._mode_note = QtGui.QLabel(m.note_1 % m.mode_note)
+        self._mode_note.setWordWrap(True)
+        layout.addWidget(self._mode_note)
 
         layout.addStretch()
         self.setLayout(layout)
@@ -155,15 +165,16 @@ class SettingsTab(QtGui.QWidget):
             QtGui.QBoxLayout.RightToLeft)
         self._firmware.setVisible(show_firmware)
         self._firmware.setText(m.firmware_1 % '.'.join(map(str, neo.version)))
-        if neo.u2f_capable:
+        if neo.allowed_modes[2]:
             self._u2f.setText(m.u2f_1 % m.u2f_supported)
         else:
             self._u2f.setText(m.u2f_1 % m.u2f_not_supported_1 % U2F_URL)
         self._mode_btn.setText(m.change_mode_1 % MODE.name_for_mode(neo.mode))
+        self._mode_note.setVisible(neo.version < (4, 1, 0))
 
     def change_name(self):
-        name, ok = QtGui.QInputDialog.getText(
-            self, m.name, m.change_name_desc, text=self._neo.name)
+        name, ok = get_text(self, m.name, m.change_name_desc,
+                            text=self._neo.name)
         if ok:
             self._neo.name = name
             self._name.setText(m.name_1 % name)
@@ -175,7 +186,13 @@ class SettingsTab(QtGui.QWidget):
         mode = ModeDialog.change_mode(self._neo, self)
 
         if mode is not None:
-            self._neo.set_mode(mode)
+            try:
+                self._neo.set_mode(mode)
+            except ModeSwitchError:
+                QtGui.QMessageBox.critical(self, m.mode_error,
+                                           m.mode_error_desc)
+                return
+
             self._mode_btn.setText(m.change_mode_1 % MODE.name_for_mode(mode))
 
             remove_dialog = QtGui.QMessageBox(self)
@@ -190,6 +207,9 @@ class SettingsTab(QtGui.QWidget):
 class ModeDialog(QtGui.QDialog):
     def __init__(self, neo, parent=None):
         super(ModeDialog, self).__init__(parent)
+
+        self.setWindowFlags(self.windowFlags()
+                            ^ QtCore.Qt.WindowContextHelpButtonHint)
 
         layout = QtGui.QVBoxLayout()
         layout.addWidget(QtGui.QLabel(m.change_mode_desc))
@@ -216,8 +236,14 @@ class ModeDialog(QtGui.QDialog):
         self.setWindowTitle(m.change_mode)
         self.setLayout(layout)
 
+        allowed = neo.allowed_modes
+        self._otp.setEnabled(allowed[0])
+        self._otp.setVisible(allowed[0])
+        self._ccid.setEnabled(allowed[1])
+        self._ccid.setVisible(allowed[1])
+        self._u2f.setEnabled(allowed[2])
+        self._u2f.setVisible(allowed[2])
         self.mode = neo.mode
-        self.has_u2f = neo.u2f_capable
 
     def _state_changed(self):
         self._ok.setDisabled(not any(self.flags))
@@ -234,17 +260,9 @@ class ModeDialog(QtGui.QDialog):
     @mode.setter
     def mode(self, value):
         otp, ccid, u2f, touch_eject = MODE.flags_for_mode(value)
-        self._otp.setChecked(otp)
-        self._ccid.setChecked(ccid)
-        self._u2f.setChecked(u2f)
-
-    @property
-    def has_u2f(self):
-        return self._u2f.isVisible()
-
-    @has_u2f.setter
-    def has_u2f(self, value):
-        self._u2f.setVisible(value)
+        self._otp.setChecked(otp and self._otp.isEnabled())
+        self._ccid.setChecked(ccid and self._ccid.isEnabled())
+        self._u2f.setChecked(u2f and self._u2f.isEnabled())
 
     @classmethod
     def change_mode(cls, neo, parent=None):
@@ -322,8 +340,7 @@ class AppsTab(QtGui.QWidget):
                 except Exception as e:
                     del self._neo.key
                     print e
-                    pw, ok = QtGui.QInputDialog.getText(
-                        self, m.key_required, m.key_required_desc)
+                    pw, ok = get_text(self, m.key_required, m.key_required_desc)
                     if not ok:
                         self.parent.setCurrentIndex(0)
                         return
