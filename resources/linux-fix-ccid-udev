@@ -8,7 +8,11 @@ DEVICES = [
     ('0x1050', '0x0111', 'Yubico Yubikey NEO OTP+CCID'),
     ('0x1050', '0x0112', 'Yubico Yubikey NEO CCID'),
     ('0x1050', '0x0115', 'Yubico Yubikey NEO U2F+CCID'),
-    ('0x1050', '0x0116', 'Yubico Yubikey NEO OTP+U2F+CCID')
+    ('0x1050', '0x0116', 'Yubico Yubikey NEO OTP+U2F+CCID'),
+    ('0x1050', '0x0404', 'Yubico Yubikey 4 CCID'),
+    ('0x1050', '0x0405', 'Yubico Yubikey 4 OTP+CCID'),
+    ('0x1050', '0x0406', 'Yubico Yubikey 4 U2F+CCID'),
+    ('0x1050', '0x0407', 'Yubico Yubikey 4 OTP+U2F+CCID')
 ]
 
 FNAME = "/etc/libccid_Info.plist"
@@ -16,7 +20,7 @@ FNAME = "/etc/libccid_Info.plist"
 UDEV = """
 ACTION!="add|change", GOTO="u2f_end"
 
-KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1050", ATTRS{idProduct}=="0113|0114|0115|0116|0120", TAG+="uaccess"
+KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1050", ATTRS{idProduct}=="0113|0114|0115|0116|0120|0402|0403|0406|0407|0410", TAG+="uaccess"
 
 LABEL="u2f_end"
 """
@@ -48,25 +52,29 @@ def add_device(dev, content):
     return content
 
 def main():
-    print "Updating %s..." % FNAME
-    with open(FNAME, 'r') as f:
-        content = f.read()
+    # Patch libccid file:
+    if os.path.isfile(FNAME):
+        print "Updating %s..." % FNAME
+        with open(FNAME, 'r') as f:
+            content = f.read()
 
-    for dev in DEVICES:
-        content = add_device(dev, content)
+        for dev in DEVICES:
+            content = add_device(dev, content)
 
-    with open(FNAME, 'w') as f:
-        f.write(content)
+        with open(FNAME, 'w') as f:
+            f.write(content)
 
-    print "Restarting PCSCD..."
-    subprocess.call(['service', 'pcscd', 'restart'])
+        print "Restarting PCSCD..."
+        subprocess.call(['service', 'pcscd', 'restart'])
+    else:
+        print "libccid_Info.plist not found, skipping..."
 
 
     # Add Udev rule:
     if os.path.isfile(UDEV_FNAME):
         print "Udev rule: %s already exists, skipping..." % UDEV_FNAME
     else:
-        print "Adding Udev rule..."
+        print "Adding Udev rule for U2F..."
         with open(UDEV_FNAME, 'w') as f:
             f.write(UDEV)
     print "Done!"

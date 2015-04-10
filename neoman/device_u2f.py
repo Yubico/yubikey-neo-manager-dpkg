@@ -27,7 +27,7 @@
 from neoman.u2fh import *
 from ctypes import POINTER, byref, c_uint, c_size_t, create_string_buffer
 from neoman.device import BaseDevice
-from neoman.exc import YkNeoMgrError
+from neoman.exc import YkNeoMgrError, ModeSwitchError
 from neoman.model.modes import MODE
 import os
 
@@ -37,7 +37,7 @@ def check(status):
         raise YkNeoMgrError(status)
 
 
-if u2fh_global_init(1 if 'NEOMAN_DEBUG' not in os.environ else 0) != 0:
+if u2fh_global_init(1 if 'NEOMAN_DEBUG' in os.environ else 0) != 0:
     raise Exception("Unable to initialize ykneomgr")
 
 
@@ -56,6 +56,7 @@ U2FHID_YUBIKEY_DEVICE_CONFIG = TYPE_INIT | U2F_VENDOR_FIRST
 
 class U2FDevice(BaseDevice):
     device_type = 'U2F'
+    allowed_modes = (False, False, True)
 
     def __init__(self, devs, index, mode=MODE.mode_for_flags(False, False, True)):
         self._devs = devs
@@ -63,10 +64,6 @@ class U2FDevice(BaseDevice):
         self._mode = mode
         self._serial = None
         self._version = (0, 0, 0)
-
-    @property
-    def u2f_capable(self):
-        return True
 
     @property
     def mode(self):
@@ -90,7 +87,11 @@ class U2FDevice(BaseDevice):
 
     def set_mode(self, mode):
         data = ('%02x0f0000' % mode).decode('hex')
-        self._sendrecv(U2FHID_YUBIKEY_DEVICE_CONFIG, data)
+        try:
+            self._sendrecv(U2FHID_YUBIKEY_DEVICE_CONFIG, data)
+            self._mode = mode
+        except YkNeoMgrError:
+            raise ModeSwitchError()
 
     def list_apps(self):
         return []
@@ -107,6 +108,11 @@ class U2FDevice(BaseDevice):
 class SKYDevice(U2FDevice):
     supported = False
     default_name = 'Security Key by Yubico'
+
+
+class EdgeDevice(U2FDevice):
+    default_name = 'YubiKey Edge'
+    allowed_modes = (True, False, True)
 
 
 def open_all_devices():
@@ -127,6 +133,13 @@ def open_all_devices():
                         'U2F' in resp.value
                     )
                     devices.append(U2FDevice(devs, index, mode))
+                elif resp.value.startswith('Yubikey 4'):
+                    mode = MODE.mode_for_flags(
+                        'OTP' in resp.value,
+                        'CCID' in resp.value,
+                        'U2F' in resp.value
+                    )
+                    devices.append(EdgeDevice(devs, index, mode))
                 elif resp.value.startswith('Security Key by Yubico'):
                     devices.append(SKYDevice(devs, index))
         return devices
