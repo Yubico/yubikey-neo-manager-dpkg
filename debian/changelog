@@ -1,8 +1,8 @@
-yubikey-neo-manager (1.2.0-1) unstable; urgency=low
+yubikey-neo-manager (1.2.1-1) unstable; urgency=low
 
   * New upstream version.
 
- -- Dain Nilsson <dain@yubico.com>  Fri, 10 Apr 2015 16:19:59 +0200
+ -- Dain Nilsson <dain@yubico.com>  Mon, 13 Apr 2015 11:11:55 +0200
 
 yubikey-neo-manager (1.1.0-1) unstable; urgency=low
 
