@@ -1,5 +1,18 @@
 2015-04-10  Dain Nilsson <dain@yubico.com>
 
+	* neoman/__init__.py: Bump version.
+
+2015-04-10  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS for release.
+
+2015-04-10  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_u2f.py: Fix allowed modes for NEO devices in U2F
+	mode.
+
+2015-04-10  Dain Nilsson <dain@yubico.com>
+
 	* resources/neoman.spec: Don't build a zip file.
 
 2015-04-10  Dain Nilsson <dain@yubico.com>

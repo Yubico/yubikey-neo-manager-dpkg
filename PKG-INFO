@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: yubikey-neo-manager
-Version: 1.2.0
+Version: 1.2.1
 Summary: Tool for managing your YubiKey NEO configuration.
 Home-page: https://github.com/Yubico/yubikey-neo-manager
 Author: Yubico Open Source Maintainers
