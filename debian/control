@@ -21,6 +21,7 @@ Architecture: all
 Depends: libu2f-host0 (>= 0.0),
          libykneomgr0 (>= 0.1.2),
          libykpers-1-1 (>= 1.11),
+         python-pyside.qtwebkit,
          ${misc:Depends},
          ${python:Depends}
 Recommends: pcscd

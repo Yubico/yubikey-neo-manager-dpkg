@@ -1,4 +1,4 @@
 #!/usr/bin/dh-exec
-debian/neoman.desktop usr/share/applications/
+resources/neoman.desktop usr/share/applications/
 resources/neoman.xpm usr/share/pixmaps/
 resources/neoman-large.png => usr/share/icons/hicolor/128x128/apps/neoman.png
