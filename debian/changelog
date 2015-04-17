@@ -1,3 +1,9 @@
+yubikey-neo-manager (1.2.1-2) unstable; urgency=low
+
+  * Change Section: from python to utils.
+
+ -- Simon Josefsson <simon@josefsson.org>  Fri, 17 Apr 2015 21:40:26 +0200
+
 yubikey-neo-manager (1.2.1-1) unstable; urgency=low
 
   * New upstream version.
