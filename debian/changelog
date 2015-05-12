@@ -1,5 +1,6 @@
 yubikey-neo-manager (1.2.1-2) unstable; urgency=low
 
+  * Update README.source.
   * Fix watch file.
   * Change Section: from python to utils.
 
