@@ -1,3 +1,52 @@
+2015-05-18  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, neoman/__init__.py: Update NEWS and version for release.
+
+2015-05-18  Dain Nilsson <dain@yubico.com>
+
+	* neoman/view/main.py: Don't save window position (fixes #36).
+
+2015-05-18  Dain Nilsson <dain@yubico.com>
+
+	* resources/neoman.nsi: Fix name of outfile.
+
+2015-05-08  Dain Nilsson <dain@yubico.com>
+
+	* resources/neoman.spec: Sign using PIV.
+
+2015-05-08  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS
+
+2015-05-08  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device.py, neoman/device_ccid.py, neoman/device_otp.py,
+	neoman/device_u2f.py: Don't show firmware version in CCID mode.
+
+2015-05-07  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS.
+
+2015-04-28  Dain Nilsson <dainzor@gmail.com>
+
+	* README: Added OpenPGP security advisory notice.
+
+2015-04-24  Dain Nilsson <dain@yubico.com>
+
+	* resources/osx-patch-ccid: Updated device list in osx-patch-ccid.
+
+2015-04-22  Dain Nilsson <dain@yubico.com>
+
+	* neoman/appletdb.json: Updated appletdb.
+
+2015-04-14  Dain Nilsson <dain@yubico.com>
+
+	* MANIFEST.in, NEWS, neoman/__init__.py: Bump version.
+
+2015-04-14  Dain Nilsson <dain@yubico.com>
+
+	* README: Use https for link in README.
+
 2015-04-10  Dain Nilsson <dain@yubico.com>
 
 	* neoman/__init__.py: Bump version.
