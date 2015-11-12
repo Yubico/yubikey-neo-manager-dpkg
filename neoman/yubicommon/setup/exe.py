@@ -25,48 +25,51 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import absolute_import
+
 from setuptools import Command
 from distutils.errors import DistutilsSetupError
-from setuptools.command.sdist import sdist
 import os
+import json
+import tempfile
 
 
-class qt_sdist(sdist):
-    def run(self):
-        self.run_command('qt_resources')
-
-        sdist.run(self)
-
-
-class qt_resources(Command):
-    description = "convert file resources into code"
-    user_options = []
-    boolean_options = []
+class executable(Command):
+    description = "create an executable"
+    user_options = [
+        ('debug', None, "build with debug flag"),
+        ('data-files', None, "data files to include")
+    ]
+    boolean_options = ['debug']
 
     def initialize_options(self):
-        pass
+        self.debug = 0
+        self.data_files = ''
 
     def finalize_options(self):
         self.cwd = os.getcwd()
-        self.source = os.path.join(self.cwd, 'qt_resources')
-        self.target = os.path.join(self.cwd, 'neoman', 'qt_resources.py')
-
-    def _create_qrc(self):
-        qrc = os.path.join(self.source, 'qt_resources.qrc')
-        with open(qrc, 'w') as f:
-            f.write('<RCC>\n<qresource>\n')
-            for fname in os.listdir(self.source):
-                f.write('<file>%s</file>\n' % fname)
-            f.write('</qresource>\n</RCC>\n')
-        return qrc
+        self.data_files = self.data_files.split()
 
     def run(self):
         if os.getcwd() != self.cwd:
             raise DistutilsSetupError("Must be in package root!")
 
-        qrc = self._create_qrc()
-        self.execute(os.system,
-                     ('pyside-rcc "%s" -o "%s"' % (qrc, self.target),))
-        os.unlink(qrc)
+        from PyInstaller.main import run as pyinst_run
 
-        self.announce("QT resources compiled into %s" % self.target)
+        os.environ['pyinstaller_data'] = json.dumps({
+            'debug': self.debug,
+            'name': self.distribution.get_name(),
+            'long_name': os.environ['setup_long_name'],
+            'data_files': self.data_files
+        })
+
+        spec = tempfile.NamedTemporaryFile(suffix='.spec', delete=False)
+        source = os.path.join(os.path.dirname(__file__), 'pyinstaller_spec.py')
+        with open(source) as f:
+            spec.write(f.read())
+        spec_name = spec.name
+        spec.close()
+        pyinst_run([spec_name])
+        os.unlink(spec_name)
+
+        self.announce("Executable created!")

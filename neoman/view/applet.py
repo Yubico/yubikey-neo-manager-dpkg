@@ -199,6 +199,10 @@ class OverviewTab(QtGui.QWidget):
         self._install_button.setText(m.uninstall if installed else m.install)
         self._install_button.setEnabled(enabled)
 
+        if neo and self._neo_selector.currentText() != neo.name:
+            self._neo_selector.setItemText(self._neo_selector.currentIndex(),
+                                           neo.name)
+
     @QtCore.Slot(int)
     def neo_selected(self, index):
         self.set_neo(self._neo_selector.itemData(index))

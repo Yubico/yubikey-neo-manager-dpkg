@@ -1,3 +1,203 @@
+2015-11-12  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, neoman/__init__.py: Prepare release.
+
+2015-11-11  Dain Nilsson <dainzor@gmail.com>
+
+	* doc/Usage.adoc: Add missing space.
+
+2015-11-11  Dain Nilsson <dain@yubico.com>
+
+	* doc/Usage.adoc: Added information about libccid (closes #50).
+
+2015-11-11  Dain Nilsson <dain@yubico.com>
+
+	* neoman/view/applet.py: Don't refresh name if no device is present.  Related to #47. This removes an error being logged when removing a
+	device.
+
+2015-11-06  Dain Nilsson <dain@yubico.com>
+
+	* neoman/appletdb.json: Updated some description strings.
+
+2015-11-06  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py: Added workaround for 4.2.4 firmware.
+
+2015-11-05  Dain Nilsson <dain@yubico.com>
+
+	* setup.cfg, vendor/yubicommon: Re-included required data files for
+	PyInstaller build (fixes #42).
+
+2015-11-05  Dain Nilsson <dain@yubico.com>
+
+	* neoman/__init__.py: Bump version.
+
+2015-11-05  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, neoman/view/applet.py: Refresh device name on applet page
+	(fixes #47).
+
+2015-11-05  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py, neoman/device_otp.py,
+	neoman/device_u2f.py, neoman/yk4_utils.py: Remove duplicated code.
+
+2015-11-05  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_ccid.py, neoman/device_otp.py, neoman/device_u2f.py: 
+	Added YK4 support over CCID.
+
+2015-11-05  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_otp.py, neoman/device_u2f.py, neoman/ykpers.py,
+	vendor/yubicommon: Added YK4 support over OTP.
+
+2015-11-05  Dain Nilsson <dain@yubico.com>
+
+	* neoman/device_u2f.py: Support YK4 over U2F transport.
+
+2015-11-05  Dain Nilsson <dain@yubico.com>
+
+	* resources/osx-patch-ccid: Removed osx-patch-ccid (use ifd-yubico
+	instead).
+
+2015-11-02  Dain Nilsson <dainzor@gmail.com>
+
+	* README: Update README Change ~ to %7e in URLs so asciidoc stops parsing them as sub text.
+
+2015-10-12  Dain Nilsson <dainzor@gmail.com>
+
+	* README: Add link to PPA package (fixes #44).
+
+2015-09-16  Henrik Stråth <henrik@yubico.com>
+
+	* doc/Manual.adoc, doc/Usage.adoc: Renamed Manual.adoc to Usage.adoc
+
+2015-09-15  Henrik Stråth <henrik@yubico.com>
+
+	* doc/Manual.adoc: Fixed Asciidoc syntax error
+
+2015-09-15  Henrik Stråth <henrik@yubico.com>
+
+	* doc/Manual.adoc: Restructured Manual.adoc
+
+2015-09-15  Henrik Stråth <henrik@yubico.com>
+
+	* doc/Manual.adoc: Flattened subdirectory hierarchy in docs/
+
+2015-09-15  Henrik Stråth <henrik@yubico.com>
+
+	* doc/Manual.adoc: Added doc directory with the PDF manual as
+	Asciidoc
+
+2015-09-10  Henrik Stråth <minisu@users.noreply.github.com>
+
+	* README: Mentioned minimal OS X version in README
+
+2015-09-02  Henrik Stråth <henrik@yubico.com>
+
+	* vendor/yubicommon: Updated yubicommon
+
+2015-08-20  Dain Nilsson <dain@yubico.com>
+
+	* setup.py, vendor/yubicommon: Update yubicommon.
+
+2015-08-20  Dain Nilsson <dain@yubico.com>
+
+	* resources/neoman.nsi, resources/neoman.pkgproj,
+	resources/neoman.spec, resources/osx-installer.pkgproj,
+	resources/qt.conf, resources/win-installer.nsi: Renamed/removed
+	resource files.
+
+2015-08-20  Dain Nilsson <dain@yubico.com>
+
+	* setup.py, vendor/yubicommon: Added longname.
+
+2015-08-20  Dain Nilsson <dain@yubico.com>
+
+	* vendor/yubicommon: Updated yubicommon.
+
+2015-08-20  Dain Nilsson <dain@yubico.com>
+
+	* setup.py: Don't explicitly specify packages.
+
+2015-08-19  Dain Nilsson <dain@yubico.com>
+
+	* neoman/__init__.py: Bumped version.
+
+2015-08-19  Dain Nilsson <dain@yubico.com>
+
+	* resources/osx-patch-ccid: Updated patch to not fail on error.
+
+2015-08-19  Dain Nilsson <dain@yubico.com>
+
+	* README: Updated README instructions for windows code signing.
+
+2015-08-19  Dain Nilsson <dainzor@gmail.com>
+
+	* : Merge pull request #41 from Yubico/yubicommon Making use of yubicommon
+
+2015-08-19  Henrik Stråth <henrik@yubico.com>
+
+	* .gitignore, MANIFEST.in, man/neoman.1.adoc, neoman/__main__.py,
+	setup.py: Man file now generated from adoc. SIGINT now correctly
+	captured.
+
+2015-08-19  Henrik Stråth <henrik@yubico.com>
+
+	* neoman/libloader.py, neoman/u2fh.py, neoman/ykneomgr.py,
+	neoman/ykpers.py: Now using libloader from yubicommons instead of
+	bundling libloader.
+
+2015-08-19  Henrik Stråth <henrik@yubico.com>
+
+	* neoman/__main__.py, neoman/messages.py, neoman/networker.py,
+	neoman/u2fh.py, neoman/view/main.py, neoman/view/tabs.py: Minor
+	cleanups
+
+2015-08-19  Henrik Stråth <henrik@yubico.com>
+
+	* neoman/messages.py, neoman/view/main.py: Readded initial window
+	resizing.
+
+2015-08-19  Henrik Stråth <henrik@yubico.com>
+
+	* neoman/model/applet.py, neoman/networker.py: Fixed bug that caused
+	downloading of db_url not to signal on completion.
+
+2015-08-19  Henrik Stråth <henrik@yubico.com>
+
+	* setup.py: Cleaned up setup.py
+
+2015-08-19  Henrik Stråth <henrik@yubico.com>
+
+	* neoman/__main__.py, neoman/main.py, scripts/neoman,
+	scripts/neoman.1, setup.py: Use entry_points instead of scripts in
+	setup.py.
+
+2015-08-19  Henrik Stråth <henrik@yubico.com>
+
+	* vendor/yubicommon: Pulled latest version of yubicommons
+
+2015-06-04  Henrik Stråth <henrik@yubico.com>
+
+	* neoman/main.py, neoman/model/applet.py, neoman/networker.py,
+	neoman/view/main.py, neoman/worker.py, qt_resources.py, release.py,
+	setup.py: Now making actual use of yubicommons.
+
+2015-06-04  Henrik Stråth <henrik@yubico.com>
+
+	* neoman/yubicommon: Symlinked in yubicommon module
+
+2015-06-04  Henrik Stråth <henrik@yubico.com>
+
+	* .gitignore, .gitmodules, vendor/yubicommon: Added submodule for
+	YubiCommon
+
+2015-06-04  Henrik Stråth <minisu@users.noreply.github.com>
+
+	* README: Fix typo in README
+
 2015-05-18  Dain Nilsson <dain@yubico.com>
 
 	* NEWS, neoman/__init__.py: Update NEWS and version for release.

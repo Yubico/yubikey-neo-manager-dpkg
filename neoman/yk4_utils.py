@@ -25,4 +25,16 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-__version__ = "1.4.0"
+YK4_CAPA_TAG = 0x01
+YK4_SERIAL_TAG = 0x01
+YK4_CAPA1_OTP = 0x01
+YK4_CAPA1_U2F = 0x02
+YK4_CAPA1_CCID = 0x04
+
+
+def parse_tlv_list(data):
+    parsed = {}
+    while data:
+        t, l, data = ord(data[0]), ord(data[1]), data[2:]
+        parsed[t], data = data[:l], data[l:]
+    return parsed

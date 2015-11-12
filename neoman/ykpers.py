@@ -26,7 +26,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 from ctypes import (Structure, POINTER, c_int, c_uint8, c_uint, c_ubyte,
                     c_char_p)
-from neoman.libloader import load_library
+from neoman.yubicommon.ctypes.libloader import load_library
 
 _lib = load_library('ykpers-1', '1')
 
@@ -86,5 +86,10 @@ ykp_set_device_mode = define('ykp_set_device_mode', [POINTER(YK_DEVICE_CONFIG),
 yk_get_key_vid_pid = define('yk_get_key_vid_pid', [POINTER(YK_KEY),
                                                    POINTER(c_int),
                                                    POINTER(c_int)], c_int)
+
+yk_get_capabilities = define('yk_get_capabilities', [POINTER(YK_KEY),
+                                                     c_uint8,
+                                                     c_uint,
+                                                     c_char_p], c_int)
 
 __all__ = [x for x in globals().keys() if x.lower().startswith('yk')]

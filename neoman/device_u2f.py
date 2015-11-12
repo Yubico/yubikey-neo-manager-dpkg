@@ -29,6 +29,8 @@ from ctypes import POINTER, byref, c_uint, c_size_t, create_string_buffer
 from neoman.device import BaseDevice
 from neoman.exc import YkNeoMgrError, ModeSwitchError
 from neoman.model.modes import MODE
+from neoman.yk4_utils import (parse_tlv_list, YK4_CAPA_TAG, YK4_CAPA1_OTP,
+                              YK4_CAPA1_CCID, YK4_CAPA1_U2F)
 import os
 
 
@@ -52,6 +54,7 @@ U2F_VENDOR_FIRST = 0x40
 TYPE_INIT = 0x80
 U2FHID_PING = TYPE_INIT | 0x01
 U2FHID_YUBIKEY_DEVICE_CONFIG = TYPE_INIT | U2F_VENDOR_FIRST
+U2FHID_YK4_CAPABILITIES = TYPE_INIT | U2F_VENDOR_FIRST + 2
 
 
 class U2FDevice(BaseDevice):
@@ -107,9 +110,27 @@ class SKYDevice(U2FDevice):
     default_name = 'Security Key by Yubico'
 
 
-class EdgeDevice(U2FDevice):
-    default_name = 'YubiKey Edge'
-    allowed_modes = (True, False, True)
+class YK4Device(U2FDevice):
+    default_name = 'YubiKey 4'
+
+    def __init__(self, devs, index, mode):
+        super(YK4Device, self).__init__(devs, index, mode)
+        self._read_capabilities()
+
+        if self._cap == 0x07:  # YK Edge should not allow CCID.
+            self.default_name = 'YubiKey Edge'
+            self.allowed_modes = (True, False, True)
+
+    def _read_capabilities(self):
+        data = '\0'
+        resp = self._sendrecv(U2FHID_YK4_CAPABILITIES, data)
+        self._cap_data = parse_tlv_list(resp[1:ord(resp[0]) + 1])
+        self._cap = int(self._cap_data.get(YK4_CAPA_TAG, '0').encode('hex'), 16)
+        self.allowed_modes = (
+            bool(self._cap & YK4_CAPA1_OTP),
+            bool(self._cap & YK4_CAPA1_CCID),
+            bool(self._cap & YK4_CAPA1_U2F)
+        )
 
 
 def open_all_devices():
@@ -136,7 +157,7 @@ def open_all_devices():
                         'CCID' in resp.value,
                         'U2F' in resp.value
                     )
-                    devices.append(EdgeDevice(devs, index, mode))
+                    devices.append(YK4Device(devs, index, mode))
                 elif resp.value.startswith('Security Key by Yubico'):
                     devices.append(SKYDevice(devs, index))
         return devices
