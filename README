@@ -12,11 +12,13 @@ link:https://developers.yubico.com/ykneo-openpgp/SecurityAdvisory%202015-04-14.h
 
 === Installation
 The recommended way to install this software including dependencies is by using
-the provided precompiled binaries for your platform. For Windows and OS X,
+the provided precompiled binaries for your platform. For Windows and OS X (10.7 and above),
 there are installers available for download
 https://developers.yubico.com/yubikey-neo-manager/Releases/[here].
-For Ubuntu we have a custom PPA with a package for it
-https://launchpad.net/~yubico/+archive/ubuntu/stable[here].
+For Ubuntu we have a
+https://launchpad.net/%7eyubico/+archive/ubuntu/stable[custom PPA] containing the 
+https://launchpad.net/%7eyubico/+archive/ubuntu/stable/+packages?field.name_filter=yubikey-neo-manager&field.status_filter=published&field.series_filter=[yubikey-neo-manager]
+package.
 
 === Dependencies
 YubiKey NEO Manager requires PySide, libykneomgr, yubikey-personalization and
@@ -24,7 +26,7 @@ libu2f-host.
 
 === Running tests
 Tests can be run using the "nosetests" command, from the python-nose package.
-Anternatively "python setup.py test" can be used, but this will cause PySide
+Alternatively "python setup.py test" can be used, but this will cause PySide
 to be compiled from source, requiring the python-dev package.
 
 === Building binaries
@@ -48,9 +50,9 @@ For Windows you will need python, PySide, PyCrypto, PyInstaller and Pywin32
 installed (32 or 64-bit versions depending on the architecture of the binary
 your are building).
 
-To sign the executable, copy the pfx file to neoman.pfx and place it in the
-root of the release directory. You will need signtool.exe (from the Windows
-SDK) either copied into the root as well or in a location in your PATH.
+To sign the executable you will need signtool.exe (from the Windows SDK) either
+copied into the root as well or in a location in your PATH, as well as a
+certificate in the Windows certificate store that you wish to sign with.
 
 Run "pyinstaller.exe resources/neoman.spec" from the main release directory.
 

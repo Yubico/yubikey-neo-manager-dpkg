@@ -1,0 +1,3 @@
+[gui_scripts]
+neoman = neoman.__main__:main
+

@@ -25,12 +25,117 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import absolute_import
+
+
+__dependencies__ = []
+__all__ = ['get_version', 'setup', 'release']
+
+
+from setuptools import setup as _setup, find_packages, Command
+from setuptools.command.sdist import sdist
 from distutils import log
 from distutils.errors import DistutilsSetupError
-from setuptools import Command
+from datetime import date
+from glob import glob
 import os
 import re
-from datetime import date
+
+VERSION_PATTERN = re.compile(r"(?m)^__version__\s*=\s*['\"](.+)['\"]$")
+DEPENDENCY_PATTERN = re.compile(
+    r"(?m)__dependencies__\s*=\s*\[((['\"].+['\"]\s*(,\s*)?)+)\]")
+
+base_module = __name__.rsplit('.', 1)[0]
+
+
+def get_version(module_name_or_file=None):
+    """Return the current version as defined by the given module/file."""
+
+    if module_name_or_file is None:
+        parts = base_module.split('.')
+        module_name_or_file = parts[0] if len(parts) > 1 else \
+            find_packages(exclude=['test', 'test.*'])[0]
+
+    if os.path.isdir(module_name_or_file):
+        module_name_or_file = os.path.join(module_name_or_file, '__init__.py')
+
+    with open(module_name_or_file, 'r') as f:
+        match = VERSION_PATTERN.search(f.read())
+        return match.group(1)
+
+
+def get_dependencies(module):
+    basedir = os.path.dirname(__file__)
+    fn = os.path.join(basedir, module + '.py')
+    if os.path.isfile(fn):
+        with open(fn, 'r') as f:
+            match = DEPENDENCY_PATTERN.search(f.read())
+            if match:
+                return [s.strip().strip('"\'')
+                        for s in match.group(1).split(',')]
+    return []
+
+
+def get_package(module):
+    return base_module + '.' + module
+
+
+def setup(**kwargs):
+    # TODO: Find a better way to pass this to a command.
+    os.environ['setup_long_name'] = kwargs.pop('long_name', kwargs.get('name'))
+
+    if 'version' not in kwargs:
+        kwargs['version'] = get_version()
+    packages = kwargs.setdefault(
+        'packages',
+        find_packages(exclude=['test', 'test.*', base_module + '.*']))
+    packages.append(__name__)
+    install_requires = kwargs.setdefault('install_requires', [])
+    for yc_module in kwargs.pop('yc_requires', []):
+        packages.append(get_package(yc_module))
+        for dep in get_dependencies(yc_module):
+            if dep not in install_requires:
+                install_requires.append(dep)
+    cmdclass = kwargs.setdefault('cmdclass', {})
+    cmdclass.setdefault('release', release)
+    cmdclass.setdefault('build_man', build_man)
+    cmdclass.setdefault('sdist', custom_sdist)
+    return _setup(**kwargs)
+
+
+class custom_sdist(sdist):
+    def run(self):
+        self.run_command('build_man')
+
+        # Run if available:
+        if 'qt_resources' in self.distribution.cmdclass:
+            self.run_command('qt_resources')
+
+        sdist.run(self)
+
+
+class build_man(Command):
+    description = "create man pages from asciidoc source"
+    user_options = []
+    boolean_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        self.cwd = os.getcwd()
+        self.fullname = self.distribution.get_fullname()
+        self.name = self.distribution.get_name()
+        self.version = self.distribution.get_version()
+
+    def run(self):
+        if os.getcwd() != self.cwd:
+            raise DistutilsSetupError("Must be in package root!")
+
+        for fname in glob(os.path.join('man', '*.adoc')):
+            self.announce("Converting: " + fname, log.INFO)
+            self.execute(os.system,
+                         ('a2x -d manpage -f manpage "%s"' % fname,))
 
 
 class release(Command):
@@ -66,6 +171,10 @@ class release(Command):
             raise DistutilsSetupError(
                 "Tag '%s' already exists!" % self.fullname)
 
+    def _verify_not_dirty(self):
+        if os.system('git diff --shortstat | grep -q "."') == 0:
+            raise DistutilsSetupError("Git has uncommitted changes!")
+
     def _sign(self):
         if os.path.isfile('dist/%s.tar.gz.asc' % self.fullname):
             # Signature exists from upload, re-use it:
@@ -87,50 +196,25 @@ class release(Command):
             tag_opts[0] = '-u ' + self.keyid
         self.execute(os.system, ('git tag ' + (' '.join(tag_opts)),))
 
-    def _do_call_publish(self, cmd):
-        self._published = os.system(cmd) == 0
-
-    def _publish(self):
-        web_repo = os.getenv('YUBICO_GITHUB_REPO')
-        if web_repo and os.path.isdir(web_repo):
-            artifacts = [
-                'dist/%s.tar.gz' % self.fullname,
-                'dist/%s.tar.gz.sig' % self.fullname
-            ]
-            cmd = '%s/publish %s %s %s' % (
-                web_repo, self.name, self.version, ' '.join(artifacts))
-
-            self.execute(self._do_call_publish, (cmd,))
-            if self._published:
-                self.announce("Release published! Don't forget to:", log.INFO)
-                self.announce("")
-                self.announce("    (cd %s && git push)" % web_repo, log.INFO)
-                self.announce("")
-            else:
-                self.warn("There was a problem publishing the release!")
-        else:
-            self.warn("YUBICO_GITHUB_REPO not set or invalid!")
-            self.warn("This release will not be published!")
-
     def run(self):
         if os.getcwd() != self.cwd:
             raise DistutilsSetupError("Must be in package root!")
 
         self._verify_version()
         self._verify_tag()
+        self._verify_not_dirty()
+        self.run_command('check')
 
         self.execute(os.system, ('git2cl > ChangeLog',))
 
+        self.run_command('sdist')
+
         if not self.skip_tests:
-            self.run_command('check')
-            # Nosetests calls sys.exit(status)
             try:
-                self.run_command('nosetests')
+                self.run_command('test')
             except SystemExit as e:
                 if e.code != 0:
                     raise DistutilsSetupError("There were test failures!")
-
-        self.run_command('sdist')
 
         if self.pypi:
             cmd_obj = self.distribution.get_command_obj('upload')
@@ -141,8 +225,6 @@ class release(Command):
 
         self._sign()
         self._tag()
-
-        self._publish()
 
         self.announce("Release complete! Don't forget to:", log.INFO)
         self.announce("")

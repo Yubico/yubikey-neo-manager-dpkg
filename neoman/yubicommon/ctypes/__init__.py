@@ -25,4 +25,6 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-__version__ = "1.4.0"
+from .libloader import load_library
+
+__all__ = ['load_library']
