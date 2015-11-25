@@ -1,6 +1,10 @@
 yubikey-neo-manager (1.4.0-1) unstable; urgency=low
 
+  [ Dain Nilsson ]
   * New upstream version.
+
+  [ Simon Josefsson ]
+  * Update upstream-signing-key.
 
  -- Dain Nilsson <dain@yubico.com>  Thu, 12 Nov 2015 16:45:32 +0100
 
