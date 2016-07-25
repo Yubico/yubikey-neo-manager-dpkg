@@ -1,3 +1,11 @@
+yubikey-neo-manager (1.4.0-2) unstable; urgency=low
+
+  * Use https URLs in Vcs-Git.
+  * Update Standards-Version from 3.9.6 to 3.9.8.
+  * Build with hardening=+all.
+
+ -- Simon Josefsson <simon@josefsson.org>  Mon, 25 Jul 2016 10:38:15 +0200
+
 yubikey-neo-manager (1.4.0-1) unstable; urgency=low
 
   [ Dain Nilsson ]
